@@ -3,17 +3,15 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 OUTPUT_ROOT="${OUTPUT_ROOT:-$HOME/exp_outputs/r-2026-pdt}"
-NOHUP_LOG_ROOT="${NOHUP_LOG_ROOT:-$OUTPUT_ROOT/_nohup}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-pdt}"
 
 usage() {
   cat >&2 <<EOF
-usage: run_manifest.sh <manifest> [run_id] [--gpu ID] [--nohup] [--dry-run] [--skip-predictions]
+usage: run_manifest.sh <manifest> [run_id] [--gpu ID] [--dry-run] [--skip-predictions]
 
 Environment:
   CONDA_ENV_NAME   conda env name, default: ${CONDA_ENV_NAME}
   OUTPUT_ROOT      output root, default: ${OUTPUT_ROOT}
-  NOHUP_LOG_ROOT   nohup log root, default: ${NOHUP_LOG_ROOT}
   GPU              default GPU id if --gpu is omitted; if unset, keep manifest env
 EOF
 }
@@ -21,16 +19,11 @@ EOF
 MANIFEST=""
 RUN_ID=""
 GPU_ID="${GPU:-}"
-USE_NOHUP=0
 DRY_RUN=0
 EXTRA_ARGS=()
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --nohup)
-      USE_NOHUP=1
-      shift
-      ;;
     --dry-run)
       DRY_RUN=1
       EXTRA_ARGS+=("$1")
@@ -97,28 +90,6 @@ if [[ -n "$GPU_ID" ]]; then
 fi
 if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
   CMD+=("${EXTRA_ARGS[@]}")
-fi
-
-if [[ "$USE_NOHUP" -eq 1 ]]; then
-  mkdir -p "$NOHUP_LOG_ROOT"
-  stamp="$(date +"%Y%m%d_%H%M%S")"
-  manifest_name="$(basename "$MANIFEST" .json)"
-  gpu_suffix=""
-  if [[ -n "$GPU_ID" ]]; then
-    gpu_suffix="_gpu${GPU_ID}"
-  fi
-  log_path="$NOHUP_LOG_ROOT/${stamp}_${manifest_name}${gpu_suffix}.log"
-  nohup "${CMD[@]}" >"$log_path" 2>&1 &
-  pid=$!
-  echo "Started in background."
-  echo "PID: $pid"
-  echo "Wrapper log: $log_path"
-  echo "Output root: $OUTPUT_ROOT"
-  echo "Conda env: $CONDA_ENV_NAME"
-  if [[ -n "$GPU_ID" ]]; then
-    echo "GPU: $GPU_ID"
-  fi
-  exit 0
 fi
 
 "${CMD[@]}"

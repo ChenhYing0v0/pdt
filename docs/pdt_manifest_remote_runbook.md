@@ -37,7 +37,7 @@ PDT 仓库不再注册 `fredr`，避免缺失 `protocol.runners.fredr` 时阻断
 - `CONDA_ENV_NAME=pdt`
 - `OUTPUT_ROOT=$HOME/exp_outputs/r-2026-pdt`
 - `--gpu ID` 转成 `--set env.CUDA_VISIBLE_DEVICES=ID`
-- `--nohup` 将 wrapper 日志写入 `$OUTPUT_ROOT/_nohup/`
+- 远程后台管理建议由外层 `tmux` session 负责，wrapper 本身只执行前台命令。
 
 ### Result sync
 
@@ -58,15 +58,14 @@ CONDA_ENV_NAME=pdt \
 scripts/remote/run_manifest.sh experiments/stage1/pdt/etth1_smoke.json --gpu 0 --dry-run
 ```
 
-正式后台运行：
+在 `tmux` session 中正式运行：
 
 ```bash
 DATA_ROOT=/path/to/datasets \
 CONDA_ENV_NAME=pdt \
-scripts/remote/run_manifest.sh experiments/stage1/pdt/etth1_smoke.json smoke_etth1 --gpu 0 --nohup
+scripts/remote/run_manifest.sh experiments/stage1/pdt/etth1_smoke.json smoke_etth1 --gpu 0
 ```
 
 ## 验证边界
 
 本地 dry-run 只能证明 manifest 展开、CLI 参数转发、输出目录快照和 wrapper 拼接是可执行路径；它不会证明数据可读、CUDA 可用、训练收敛或 KBS 返修实验结果已经复现。
-

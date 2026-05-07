@@ -85,7 +85,7 @@ ensure_remote_root_exists
 
 if [[ ${#RUN_IDS[@]} -eq 0 || "$SYNC_ALL" -eq 1 ]]; then
   build_rsync_args
-  rsync "${RSYNC_ARGS[@]}" --exclude "_nohup/" "${REMOTE_HOST}:${REMOTE_RESULTS_ROOT}/" "${LOCAL_RESULTS_ROOT}/"
+  rsync "${RSYNC_ARGS[@]}" "${REMOTE_HOST}:${REMOTE_RESULTS_ROOT}/" "${LOCAL_RESULTS_ROOT}/"
   exit 0
 fi
 
