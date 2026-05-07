@@ -1,0 +1,5 @@
+{
+  "name": "PDT",
+  "repo_url": "git@github.com:ChenhYing0v0/LinearEnc.git",
+  "notes": "Imported from the upstream LinearEnc repository, then trimmed to PDT-only long_term_forecast support for R_2026_PDT."
+}

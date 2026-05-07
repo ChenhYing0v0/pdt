@@ -1,0 +1,19 @@
+{
+  "projects": {
+    "r-2026-pdt": {
+      "project_id": "r-2026-pdt",
+      "repo_roots": [
+        "/Users/river/PaperResearch/Project/R_2026_PDT"
+      ],
+      "vault_name": "ResearchVault",
+      "vault_root": "/Users/river/Obsidian/ResearchVault/Research/r-2026-pdt",
+      "hub_note": "Research/r-2026-pdt/00-Hub.md",
+      "status": "active",
+      "auto_sync": true,
+      "note_language": "zh-CN",
+      "created_at": "2026-05-07T03:10:02Z",
+      "updated_at": "2026-05-07T03:12:40Z",
+      "archive_root": "/Users/river/Obsidian/ResearchVault/Archive"
+    }
+  }
+}

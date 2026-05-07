@@ -1,0 +1,39 @@
+{
+  "baseline": "itransformer",
+  "stage": "stage1_backbone_init",
+  "dataset": "<DATASET_NAME>",
+  "seq_len": 336,
+  "pred_len": [96, 192, 336, 720],
+  "seed": 2026,
+  "search_budget": {
+    "trials": 1,
+    "policy": "fixed_reproduction"
+  },
+  "entry": "baselines/itransformer/run.py",
+  "args": {
+    "data": "custom",
+    "root_path": "${DATA_ROOT}/<DATASET_FOLDER>/",
+    "data_path": "<DATASET_FILE>.csv",
+    "features": "M",
+    "seq_len": 336,
+    "label_len": 48,
+    "enc_in": 7,
+    "dec_in": 7,
+    "c_out": 7,
+    "d_model": 128,
+    "d_ff": 256,
+    "model": "iTransformer",
+    "batch_size": [64, 64, 32, 16],
+    "e_layers": [2, 2, 3, 3],
+    "learning_rate": 0.0001,
+    "train_epochs": 100,
+    "itr": 1,
+    "des": "Exp"
+  },
+  "env": {
+    "DATA_ROOT": "${DATA_ROOT}",
+    "CUDA_VISIBLE_DEVICES": "0"
+  },
+  "metric_policy": "forecasting_v1",
+  "selection_policy": "best_val_mse"
+}
