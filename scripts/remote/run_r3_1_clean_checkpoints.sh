@@ -8,9 +8,11 @@ usage() {
   cat >&2 <<'EOF'
 usage: run_r3_1_clean_checkpoints.sh [--gpu ID]
 
-Runs the clean-checkpoint training manifests for Reviewer #3.1 robustness
-experiments. Execute this on the remote training machine from the repository
-checkout. Set DATA_ROOT, CONDA_ENV_NAME, and OUTPUT_ROOT as needed.
+Runs the remaining clean-checkpoint training manifests for Reviewer #3.1
+robustness experiments. PDT has already completed, so this entry now launches
+only iTransformer and DLinear. Execute this on the remote training machine from
+the repository checkout. Set DATA_ROOT, CONDA_ENV_NAME, and OUTPUT_ROOT as
+needed.
 EOF
 }
 
@@ -47,8 +49,6 @@ run_manifest() {
   "${cmd[@]}"
 }
 
-run_manifest "experiments/revision/r3_1_noise_robustness/clean_checkpoints/pdt_etth1_clean.json" \
-  "r3_1_clean_pdt_etth1_s2023"
 run_manifest "experiments/revision/r3_1_noise_robustness/clean_checkpoints/itransformer_etth1_clean.json" \
   "r3_1_clean_itransformer_etth1_s2023"
 run_manifest "experiments/revision/r3_1_noise_robustness/clean_checkpoints/dlinear_etth1_clean.json" \

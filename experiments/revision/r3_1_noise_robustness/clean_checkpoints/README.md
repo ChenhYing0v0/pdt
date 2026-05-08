@@ -31,7 +31,20 @@ CONDA_ENV_NAME=pdt OUTPUT_ROOT="$HOME/exp_outputs/r-2026-pdt" \
   bash scripts/remote/run_r3_1_clean_checkpoints.sh --gpu 0
 ```
 
-如需后台运行：
+当前 PDT 已完成，`run_r3_1_clean_checkpoints.sh` 只会继续运行 iTransformer 与 DLinear。
+如需用两张卡并行运行：
+
+```bash
+CONDA_ENV_NAME=pdt OUTPUT_ROOT="$HOME/exp_outputs/r-2026-pdt" \
+  nohup bash scripts/remote/run_r3_1_clean_itransformer.sh --gpu 0 \
+  > r3_1_clean_itransformer.log 2>&1 &
+
+CONDA_ENV_NAME=pdt OUTPUT_ROOT="$HOME/exp_outputs/r-2026-pdt" \
+  nohup bash scripts/remote/run_r3_1_clean_dlinear.sh --gpu 1 \
+  > r3_1_clean_dlinear.log 2>&1 &
+```
+
+如需顺序后台运行：
 
 ```bash
 nohup bash scripts/remote/run_r3_1_clean_checkpoints.sh --gpu 0 \

@@ -81,7 +81,20 @@ CONDA_ENV_NAME=pdt OUTPUT_ROOT="$HOME/exp_outputs/r-2026-pdt" \
   bash scripts/remote/run_r3_1_clean_checkpoints.sh --gpu 0
 ```
 
-后台运行：
+当前 PDT clean checkpoints 已完成，`run_r3_1_clean_checkpoints.sh` 只会继续启动
+iTransformer 和 DLinear。若有两张 GPU，推荐拆成两个脚本并行运行：
+
+```bash
+CONDA_ENV_NAME=pdt OUTPUT_ROOT="$HOME/exp_outputs/r-2026-pdt" \
+  nohup bash scripts/remote/run_r3_1_clean_itransformer.sh --gpu 0 \
+  > r3_1_clean_itransformer.log 2>&1 &
+
+CONDA_ENV_NAME=pdt OUTPUT_ROOT="$HOME/exp_outputs/r-2026-pdt" \
+  nohup bash scripts/remote/run_r3_1_clean_dlinear.sh --gpu 1 \
+  > r3_1_clean_dlinear.log 2>&1 &
+```
+
+顺序后台运行：
 
 ```bash
 nohup bash scripts/remote/run_r3_1_clean_checkpoints.sh --gpu 0 \
@@ -139,6 +152,8 @@ artifacts/revision/r3_1_noise_robustness/clean_checkpoints/index.tsv
 - JSON parse check for all clean checkpoint manifests.
 - `bash -n` for remote launch/sync scripts.
 - `run_manifest --dry-run` for PDT, iTransformer, and DLinear manifests.
+- NumPy 2.0 compatibility check: iTransformer 的 `np.Inf` 已改为 `np.inf`；
+  DLinear 所走的 PDT tools 已经使用 `np.inf`。
 
 本地未完成：
 
