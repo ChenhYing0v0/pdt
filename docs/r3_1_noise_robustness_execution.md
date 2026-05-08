@@ -36,11 +36,16 @@ spike/segment corruption evaluation 将在 clean checkpoints 回传后继续执�
 ### iTransformer
 
 - Runner: `protocol/runners/itransformer.py`
-- Entry: `baselines/itransformer/run.py`
+- Entry: `baselines/PDT/run.py`
 - Model: `iTransformer`
 - Clean checkpoint 输出：
   - nested checkpoint: `checkpoints/{setting}/checkpoint.pth`
   - top-level copy: `best.ckpt`
+
+iTransformer 当前走 shared PDT model-zoo route，而不是 vendored official
+`baselines/itransformer/run.py`。原因是 official route 的 test exporter 对
+channel-wise `CORR` 直接做 `float(corr)`，在 protocol test 阶段会因 array-to-scalar
+转换失败；shared route 与 PDT/DLinear 使用同一 metric collector 和 artifact contract。
 
 ### DLinear
 

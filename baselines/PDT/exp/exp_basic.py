@@ -4,7 +4,7 @@ import shutil
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
-from models import DLinear, PDT, R2Linear
+from models import DLinear, PDT, R2Linear, iTransformer
 from utils.tools import ensure_path
 
 
@@ -15,6 +15,7 @@ class Exp_Basic(object):
             "DLinear": DLinear,
             "PDT": PDT,
             "R2Linear": R2Linear,
+            "iTransformer": iTransformer,
         }
         self.device = self._acquire_device()
         self.model = self._build_model().to(self.device)

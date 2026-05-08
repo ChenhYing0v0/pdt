@@ -9,7 +9,7 @@
     "trials": 1,
     "policy": "fixed_reproduction"
   },
-  "entry": "baselines/itransformer/run.py",
+  "entry": "baselines/PDT/run.py",
   "args": {
     "data": "ETTh1",
     "root_path": "${DATA_ROOT}/ETT-small/",
