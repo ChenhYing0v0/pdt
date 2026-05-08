@@ -1,5 +1,4 @@
 import torch
-import torchmetrics as tm
 
 
 def RSE(pred, true):
@@ -42,114 +41,48 @@ def metric_torch(pred, true):
     return mae, mse, rmse, mape, mspe
 
 
-class MeanAE(tm.Metric):
-    is_differentiable: bool = True
-    higher_is_better: bool = False
-    full_state_update: bool = False
+class MetricCollector:
+    def __init__(self, device='cpu'):
+        self.device = device
+        self.reset()
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def reset(self):
+        self.sum_abs_error = torch.tensor(0.0, device=self.device)
+        self.sum_squared_error = torch.tensor(0.0, device=self.device)
+        self.sum_abs_per_error = torch.tensor(0.0, device=self.device)
+        self.sum_sqr_per_error = torch.tensor(0.0, device=self.device)
+        self.total = torch.tensor(0, device=self.device)
 
-        self.add_state("sum_abs_error", default=torch.tensor(0.0), dist_reduce_fx="sum")
-        self.add_state("total", default=torch.tensor(0), dist_reduce_fx="sum")
+    def to(self, device):
+        self.device = device
+        self.sum_abs_error = self.sum_abs_error.to(device)
+        self.sum_squared_error = self.sum_squared_error.to(device)
+        self.sum_abs_per_error = self.sum_abs_per_error.to(device)
+        self.sum_sqr_per_error = self.sum_sqr_per_error.to(device)
+        self.total = self.total.to(device)
+        return self
 
-    def update(self, preds, target) -> None:
-        """Update state with predictions and targets."""
-        sum_abs_error = torch.sum(torch.abs(preds - target))
-        num_obs = target.numel()
-        self.sum_abs_error += sum_abs_error
-        self.total += num_obs
-
-    def compute(self):
-        """Compute mean absolute error over state."""
-        value = self.sum_abs_error / self.total
-        return value.item()
-
-
-class MeanSE(tm.Metric):
-    is_differentiable = True
-    higher_is_better = False
-    full_state_update = False
-
-    def __init__(self, squared=True, num_outputs=1, **kwargs) -> None:
-        super().__init__(**kwargs)
-        self.squared = squared
-        self.num_outputs = num_outputs
-
-        self.add_state("sum_squared_error", default=torch.zeros(num_outputs), dist_reduce_fx="sum")
-        self.add_state("total", default=torch.tensor(0), dist_reduce_fx="sum")
-
-    def update(self, preds, target) -> None:
-        """Update state with predictions and targets."""
-        preds, target = preds.view(-1), target.view(-1)
-        sum_squared_error = torch.sum((preds - target) ** 2, dim=0)
-        num_obs = target.shape[0]
-        self.sum_squared_error += sum_squared_error
-        self.total += num_obs
+    def update(self, preds, target):
+        preds = preds.detach()
+        target = target.detach()
+        self.sum_abs_error += torch.sum(torch.abs(preds - target))
+        self.sum_squared_error += torch.sum((preds - target) ** 2)
+        self.sum_abs_per_error += torch.sum(torch.abs((preds - target) / target))
+        self.sum_sqr_per_error += torch.sum(torch.square((preds - target) / target))
+        self.total += target.numel()
 
     def compute(self):
-        """Compute mean squared error over state."""
-        value = self.sum_squared_error / self.total if self.squared else torch.sqrt(self.sum_squared_error / self.total)
-        return value.item()
-
-
-class MAbsPE(tm.Metric):
-    is_differentiable: bool = True
-    higher_is_better: bool = False
-    full_state_update: bool = False
-
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-        self.add_state("sum_abs_per_error", default=torch.tensor(0.0), dist_reduce_fx="sum")
-        self.add_state("total", default=torch.tensor(0.0), dist_reduce_fx="sum")
-
-    def update(self, preds, target) -> None:
-        """Update state with predictions and targets."""
-        abs_per_error = torch.abs((preds - target) / target)
-        sum_abs_per_error = torch.sum(abs_per_error)
-        num_obs = target.numel()
-        self.sum_abs_per_error += sum_abs_per_error
-        self.total += num_obs
-
-    def compute(self):
-        """Compute mean absolute percentage error over state."""
-        value = self.sum_abs_per_error / self.total
-        return value.item()
-
-
-class MSqrPE(tm.Metric):
-    is_differentiable: bool = True
-    higher_is_better: bool = False
-    full_state_update: bool = False
-
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
-        self.add_state("sum_sqr_per_error", default=torch.tensor(0.0), dist_reduce_fx="sum")
-        self.add_state("total", default=torch.tensor(0.0), dist_reduce_fx="sum")
-
-    def update(self, preds, target) -> None:
-        """Update state with predictions and targets."""
-        sqr_per_error = torch.square((preds - target) / target)
-        sum_sqr_per_error = torch.sum(sqr_per_error)
-        num_obs = target.numel()
-        self.sum_sqr_per_error += sum_sqr_per_error
-        self.total += num_obs
-
-    def compute(self):
-        """Compute mean square percentage error over state."""
-        value = self.sum_sqr_per_error / self.total
-        return value.item()
+        mse = self.sum_squared_error / self.total
+        return {
+            "mae": (self.sum_abs_error / self.total).item(),
+            "mse": mse.item(),
+            "rmse": torch.sqrt(mse).item(),
+            "mape": (self.sum_abs_per_error / self.total).item(),
+            "mspe": (self.sum_sqr_per_error / self.total).item(),
+        }
 
 
 def create_metric_collector(device='cpu'):
-    collector = tm.MetricCollection({
-        "mae": MeanAE(),
-        "mse": MeanSE(),
-        "rmse": MeanSE(squared=False),
-        "mape": MAbsPE(),
-        "mspe": MSqrPE()
-    }).to(device)
+    collector = MetricCollector(device=device)
     collector.reset()
     return collector

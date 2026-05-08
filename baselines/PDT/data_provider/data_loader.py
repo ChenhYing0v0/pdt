@@ -7,10 +7,19 @@ import numpy as np
 import pandas as pd
 import torch
 from sklearn.preprocessing import StandardScaler
-from sktime.datasets import load_from_tsfile_to_dataframe
 from torch.utils.data import DataLoader, Dataset
 
-from data_provider.m4 import M4Dataset, M4Meta
+try:
+    from sktime.datasets import load_from_tsfile_to_dataframe
+except ImportError:
+    load_from_tsfile_to_dataframe = None
+
+try:
+    from data_provider.m4 import M4Dataset, M4Meta
+except ImportError:
+    M4Dataset = None
+    M4Meta = None
+
 from data_provider.uea import Normalizer, interpolate_missing, subsample
 from utils.timefeatures import time_features
 
@@ -512,6 +521,8 @@ class Dataset_M4(Dataset):
         add_noise=False, noise_amp=0.1, noise_freq_percentage=0.05, noise_seed=2023, 
         noise_type='sin', data_percentage=1., **kwargs
     ):
+        if M4Dataset is None or M4Meta is None:
+            raise ImportError("Dataset_M4 requires optional M4 dependencies. PDT long-term forecasting does not use them.")
         # size [seq_len, label_len, pred_len]
         # init
         self.features = features
@@ -883,6 +894,8 @@ class UEAloader(Dataset):
         return all_df, labels_df
 
     def load_single(self, filepath):
+        if load_from_tsfile_to_dataframe is None:
+            raise ImportError("UEAloader requires optional dependency 'sktime'. PDT long-term forecasting does not use it.")
         df, labels = load_from_tsfile_to_dataframe(filepath, return_separate_X_and_y=True,
                                                              replace_missing_vals_with='NaN')
         labels = pd.Series(labels, dtype="category")
