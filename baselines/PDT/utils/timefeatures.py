@@ -12,6 +12,7 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
+import re
 from typing import List
 
 import numpy as np
@@ -87,6 +88,14 @@ class WeekOfYear(TimeFeature):
         return (index.isocalendar().week - 1) / 52.0 - 0.5
 
 
+def _normalize_frequency_alias(freq_str: str) -> str:
+    if not freq_str:
+        return freq_str
+    if freq_str in {"t", "T"}:
+        return "min"
+    return re.sub(r"(?i)(\d+)t$", r"\1min", freq_str)
+
+
 def time_features_from_frequency_str(freq_str: str) -> List[TimeFeature]:
     """
     Returns a list of time features that will be appropriate for the given frequency string.
@@ -121,6 +130,7 @@ def time_features_from_frequency_str(freq_str: str) -> List[TimeFeature]:
         ],
     }
 
+    freq_str = _normalize_frequency_alias(freq_str)
     offset = to_offset(freq_str)
 
     for offset_type, feature_classes in features_by_offsets.items():
