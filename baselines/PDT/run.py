@@ -79,6 +79,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_vis', action='store_true', help='output visual figures', default=False)
     parser.add_argument('--run_id', type=str, default='', help='protocol run id')
     parser.add_argument('--output_dir', type=str, default='', help='protocol output directory')
+    parser.add_argument('--checkpoint_path', type=str, default='', help='explicit checkpoint path for evaluation')
     parser.add_argument('--metric_policy', type=str, default='forecasting_v1', help='protocol metric policy')
     parser.add_argument('--selection_policy', type=str, default='best_val_mse', help='protocol selection policy')
     parser.add_argument('--skip_predictions', action='store_true', default=False, help='skip protocol prediction npz')
@@ -99,6 +100,12 @@ if __name__ == '__main__':
     parser.add_argument('--noise_type', type=str, default='sin', help='noise type, options: [sin, normal]')
     parser.add_argument('--cutoff_freq_percentage', type=float, default=0.06, help='cutoff frequency')
     parser.add_argument('--data_percentage', type=float, default=1., help='percentage of training data')
+    parser.add_argument('--test_corruption_type', type=str, default='none',
+                        choices=['none', 'spike', 'segment'], help='test-time input corruption type')
+    parser.add_argument('--test_corruption_rate', type=float, default=0.05, help='test-time corruption rate')
+    parser.add_argument('--test_corruption_amp', type=float, default=3.0, help='test-time corruption amplitude')
+    parser.add_argument('--test_corruption_seed', type=int, default=2023, help='test-time corruption seed')
+    parser.add_argument('--test_corruption_segment_len', type=int, default=4, help='test-time segment length')
 
     # forecasting task
     parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')
@@ -260,6 +267,7 @@ if __name__ == '__main__':
         args.model = 'PDT'
     args = _prepare_protocol_output_paths(args)
     args = _resolve_runtime_paths(args)
+    args.checkpoint_path = _resolve_path(args.checkpoint_path)
 
     fix_seed = args.fix_seed
     random.seed(fix_seed)

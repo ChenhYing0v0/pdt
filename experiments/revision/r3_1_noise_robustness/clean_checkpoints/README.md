@@ -67,3 +67,30 @@ REMOTE_HOST=<your-host> REMOTE_RESULTS_ROOT='~/exp_outputs/r-2026-pdt' \
 ```text
 artifacts/revision/r3_1_noise_robustness/clean_checkpoints/
 ```
+
+## Corruption evaluation
+
+clean checkpoints 全部回传后，运行 test-time spike/segment corruption evaluation：
+
+```bash
+CONDA_ENV_NAME=pdt DATA_ROOT=/home/yingch/projects/R_2026_PDT/baselines/PDT/dataset \
+  bash scripts/remote/run_r3_1_corruption_eval.sh --gpu 0 --only-missing
+```
+
+若在远程训练机上直接复用 `$OUTPUT_ROOT` 中的 clean runs：
+
+```bash
+CONDA_ENV_NAME=pdt OUTPUT_ROOT="$HOME/exp_outputs/r-2026-pdt" \
+DATA_ROOT=/home/yingch/projects/R_2026_PDT/baselines/PDT/dataset \
+  bash scripts/remote/run_r3_1_corruption_eval.sh --gpu 0 --only-missing \
+    --clean-index /tmp/missing-index.tsv \
+    --clean-runs-root "$HOME/exp_outputs/r-2026-pdt"
+```
+
+汇总输出：
+
+```text
+artifacts/revision/r3_1_noise_robustness/robustness_runs.csv
+artifacts/revision/r3_1_noise_robustness/robustness_summary.csv
+artifacts/revision/r3_1_noise_robustness/robustness_table.tex
+```

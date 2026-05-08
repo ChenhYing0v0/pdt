@@ -149,7 +149,55 @@ artifacts/revision/r3_1_noise_robustness/clean_checkpoints/{run_id}/train.log
 artifacts/revision/r3_1_noise_robustness/clean_checkpoints/index.tsv
 ```
 
-## 6. Verification performed
+## 6. Corruption evaluation
+
+clean checkpoints 回传后，下一步执行 evaluation-only corruption runs。该阶段不重新训练，
+只加载 `best.ckpt`，在 test loop 的 encoder input `batch_x` 上注入 anomaly。
+
+默认参数：
+
+| Setting | Value |
+|---|---:|
+| corruption types | `spike,segment` |
+| corruption rate | `0.05` |
+| corruption amp | `3.0` |
+| corruption seed | `2023` |
+| segment length | `4` |
+
+在远程 `pdt` 环境中执行：
+
+```bash
+CONDA_ENV_NAME=pdt DATA_ROOT=/home/yingch/projects/R_2026_PDT/baselines/PDT/dataset \
+  bash scripts/remote/run_r3_1_corruption_eval.sh --gpu 0 --only-missing
+```
+
+如果 clean runs 仍保留在远程 `OUTPUT_ROOT`，但本地生成的
+`clean_checkpoints/index.tsv` 不在远程仓库中，可直接指定 clean runs root：
+
+```bash
+CONDA_ENV_NAME=pdt OUTPUT_ROOT="$HOME/exp_outputs/r-2026-pdt" \
+DATA_ROOT=/home/yingch/projects/R_2026_PDT/baselines/PDT/dataset \
+  bash scripts/remote/run_r3_1_corruption_eval.sh --gpu 0 --only-missing \
+    --clean-index /tmp/missing-index.tsv \
+    --clean-runs-root "$HOME/exp_outputs/r-2026-pdt"
+```
+
+输出路径：
+
+```text
+artifacts/revision/r3_1_noise_robustness/eval_runs/{spike,segment}/
+artifacts/revision/r3_1_noise_robustness/robustness_runs.csv
+artifacts/revision/r3_1_noise_robustness/robustness_summary.csv
+artifacts/revision/r3_1_noise_robustness/robustness_table.tex
+```
+
+完成后可只汇总已有 metrics：
+
+```bash
+python scripts/revision/eval_r3_1_noise_robustness.py --collect-only
+```
+
+## 7. Verification performed
 
 本地已完成：
 
@@ -159,8 +207,11 @@ artifacts/revision/r3_1_noise_robustness/clean_checkpoints/index.tsv
 - `run_manifest --dry-run` for PDT, iTransformer, and DLinear manifests.
 - NumPy 2.0 compatibility check: iTransformer 的 `np.Inf` 已改为 `np.inf`；
   DLinear 所走的 PDT tools 已经使用 `np.inf`。
+- corruption evaluation driver `--dry-run`，确认 12 个 clean runs 可展开为 24 个
+  evaluation-only runs。
 
 本地未完成：
 
 - Python runtime import / forward / training smoke，因为本机默认 Python 环境无
-  `torch`。该检查需在远程 `CONDA_ENV_NAME=pdt` 环境完成。
+  `torch`。corruption evaluation 的实际 forward 需在远程 `CONDA_ENV_NAME=pdt`
+  环境完成。

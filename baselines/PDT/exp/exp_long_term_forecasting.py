@@ -15,6 +15,7 @@ from utils.metrics import metric
 from utils.metrics_torch import create_metric_collector, metric_torch
 from utils.polynomial import (chebyshev_torch, hermite_torch, laguerre_torch,
                               leg_torch)
+from utils.test_corruptions import maybe_apply_test_corruption
 from utils.tools import (EarlyStopping, adjust_learning_rate, ensure_path,
                          visual)
 
@@ -326,7 +327,10 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         test_data, test_loader = self._get_data(flag='test')
         if test:
             print('loading model')
-            self.model.load_state_dict(torch.load(os.path.join(self.args.checkpoints, setting, 'checkpoint.pth')))
+            checkpoint_path = getattr(self.args, 'checkpoint_path', '')
+            if not checkpoint_path:
+                checkpoint_path = os.path.join(self.args.checkpoints, setting, 'checkpoint.pth')
+            self.model.load_state_dict(torch.load(checkpoint_path))
 
         inputs, preds, trues = [], [], []
         folder_path = os.path.join(self.args.test_results, setting)
@@ -343,6 +347,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(test_loader):
                 batch_x = batch_x.float().to(self.device)
                 batch_y = batch_y.float().to(self.device)
+                batch_x = maybe_apply_test_corruption(batch_x, self.args, batch_index=i)
 
                 batch_x_mark = batch_x_mark.float().to(self.device)
                 batch_y_mark = batch_y_mark.float().to(self.device)
@@ -437,6 +442,14 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         np.save(os.path.join(res_path, 'metrics.npy'), np.array([mae, mse, rmse, mape, mspe]))
         if getattr(self.args, 'output_dir', ''):
+            if getattr(self.args, 'test_corruption_type', 'none') != 'none':
+                m.update({
+                    'test_corruption_type': self.args.test_corruption_type,
+                    'test_corruption_rate': self.args.test_corruption_rate,
+                    'test_corruption_amp': self.args.test_corruption_amp,
+                    'test_corruption_seed': self.args.test_corruption_seed,
+                    'test_corruption_segment_len': self.args.test_corruption_segment_len,
+                })
             with open(os.path.join(self.args.output_dir, 'metrics.json'), 'w', encoding='utf-8') as f_json:
                 json.dump(m, f_json, indent=2, sort_keys=True)
 
