@@ -25,7 +25,10 @@ except ImportError:
 
     trunc_normal_ = torch.nn.init.trunc_normal_
 import random
-import seaborn as sns
+try:
+    import seaborn as sns
+except ImportError:
+    sns = None
 from einops import rearrange
 
 plt.switch_backend('agg')
@@ -71,7 +74,7 @@ class EarlyStopping:
         self.counter = 0
         self.best_score = None
         self.early_stop = False
-        self.val_loss_min = np.Inf
+        self.val_loss_min = np.inf
         self.delta = delta
         self.save_every_epoch = save_every_epoch
 
@@ -434,6 +437,8 @@ def create_sub_diagonal_matrix(n, value=1, offset=0):
 
 
 def plot_mat(mat, str_cat='series_2D', str0='tmp', save_folder='./results'):
+    if sns is None:
+        raise ImportError("plot_mat requires optional dependency 'seaborn'. PDT long-term forecasting does not use it.")
     if not isinstance(mat, np.ndarray):
         mat = mat.detach().cpu().numpy()
     if not os.path.exists(save_folder):
