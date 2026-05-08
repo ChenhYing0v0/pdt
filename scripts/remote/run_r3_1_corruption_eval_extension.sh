@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+CONDA_ENV_NAME="${CONDA_ENV_NAME:-pdt}"
+GPU_ID="${GPU:-}"
+DATASET="all"
+CLEAN_INDEX="${CLEAN_INDEX:-artifacts/revision/r3_1_noise_robustness_extension/clean_checkpoints/index.tsv}"
+CLEAN_RUNS_ROOT="${CLEAN_RUNS_ROOT:-$HOME/exp_outputs/r-2026-pdt}"
+OUTPUT_ROOT="${OUTPUT_ROOT:-artifacts/revision/r3_1_noise_robustness_extension}"
+EXTRA_ARGS=()
+
+usage() {
+  cat >&2 <<'EOF'
+usage: run_r3_1_corruption_eval_extension.sh [--gpu ID] [--dataset weather|ettm2|all] [--dry-run] [--collect-only] [--only-missing]
+
+Runs Reviewer #3.1 spike/segment corruption evaluation for the Weather/ETTm2
+extension from the clean checkpoint index. Execute this on the remote machine
+after clean checkpoints are trained and indexed.
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --gpu)
+      if [[ -z "${2:-}" ]]; then
+        echo "--gpu requires a GPU id." >&2
+        exit 1
+      fi
+      GPU_ID="$2"
+      shift 2
+      ;;
+    --dataset)
+      if [[ -z "${2:-}" ]]; then
+        echo "--dataset requires weather, ettm2, or all." >&2
+        exit 1
+      fi
+      DATASET="$2"
+      shift 2
+      ;;
+    --dry-run|--collect-only|--only-missing)
+      EXTRA_ARGS+=("$1")
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      EXTRA_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+case "$DATASET" in
+  weather)
+    DATASETS="Weather"
+    ;;
+  ettm2)
+    DATASETS="ETTm2"
+    ;;
+  all)
+    DATASETS="Weather,ETTm2"
+    ;;
+  *)
+    echo "--dataset must be weather, ettm2, or all; got: $DATASET" >&2
+    exit 1
+    ;;
+esac
+
+CMD=(
+  python -u "$ROOT/scripts/revision/eval_r3_1_noise_robustness.py"
+  --clean-index "$CLEAN_INDEX"
+  --clean-runs-root "$CLEAN_RUNS_ROOT"
+  --output-root "$OUTPUT_ROOT"
+  --datasets "$DATASETS"
+  "${EXTRA_ARGS[@]}"
+)
+if [[ -n "$GPU_ID" ]]; then
+  CMD+=(--gpu "$GPU_ID")
+fi
+
+cd "$ROOT"
+if command -v conda >/dev/null 2>&1; then
+  conda run --no-capture-output -n "$CONDA_ENV_NAME" "${CMD[@]}"
+else
+  "${CMD[@]}"
+fi

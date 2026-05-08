@@ -43,9 +43,9 @@ def _read_index(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle, delimiter="\t"))
 
 
-def _discover_clean_rows(clean_runs_root: Path) -> list[dict[str, str]]:
+def _discover_clean_rows(clean_runs_root: Path, run_glob: str) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
-    for run_dir in sorted(clean_runs_root.glob("r3_1_clean_*_etth1_s2023_pl*")):
+    for run_dir in sorted(clean_runs_root.glob(run_glob)):
         if not run_dir.is_dir():
             continue
         rows.append(
@@ -64,13 +64,36 @@ def _discover_clean_rows(clean_runs_root: Path) -> list[dict[str, str]]:
     return rows
 
 
-def _load_clean_rows(index_path: Path, clean_runs_root: Path) -> list[dict[str, str]]:
+def _manifest_dataset(snapshot: dict[str, Any]) -> str:
+    manifest = snapshot["manifest"]
+    return str(manifest.get("dataset") or manifest["args"].get("data"))
+
+
+def _parse_dataset_filter(raw_value: str) -> set[str]:
+    return {item.strip().lower() for item in raw_value.split(",") if item.strip()}
+
+
+def _filter_rows_by_dataset(rows: list[dict[str, str]], datasets: set[str]) -> list[dict[str, str]]:
+    if not datasets:
+        return rows
+    filtered: list[dict[str, str]] = []
+    for row in rows:
+        snapshot = _read_json(_resolve_index_path(row["config"], REPO_ROOT))
+        if _manifest_dataset(snapshot).lower() in datasets:
+            filtered.append(row)
+    return filtered
+
+
+def _load_clean_rows(index_path: Path, clean_runs_root: Path, run_glob: str, datasets: set[str]) -> list[dict[str, str]]:
     if index_path.exists():
-        return _read_index(index_path)
-    rows = _discover_clean_rows(clean_runs_root)
+        rows = _read_index(index_path)
+    else:
+        rows = _discover_clean_rows(clean_runs_root, run_glob)
+    rows = _filter_rows_by_dataset(rows, datasets)
     if not rows:
         raise FileNotFoundError(
-            f"Clean index not found at {index_path}, and no clean runs were discovered under {clean_runs_root}."
+            f"No clean rows found. Checked index={index_path}, clean_runs_root={clean_runs_root}, "
+            f"run_glob={run_glob}, datasets={sorted(datasets) if datasets else 'all'}."
         )
     return rows
 
@@ -79,17 +102,22 @@ def _model_order(model: str) -> int:
     return {"PDT": 0, "iTransformer": 1, "DLinear": 2}.get(model, 99)
 
 
-def _run_sort_key(row: dict[str, str]) -> tuple[int, int]:
+def _run_sort_key(row: dict[str, str]) -> tuple[str, int, int]:
     snapshot = _read_json(_resolve_index_path(row["config"], REPO_ROOT))
     args = snapshot["manifest"]["args"]
-    return _model_order(str(args["model"])), int(args["pred_len"])
+    return _manifest_dataset(snapshot), _model_order(str(args["model"])), int(args["pred_len"])
 
 
-def _resolve_root_path(args: dict[str, Any], data_root: str | None) -> None:
+def _resolve_root_path(args: dict[str, Any], dataset: str, data_root: str | None) -> None:
     if not data_root:
         return
-    if args.get("data") == "ETTh1":
+    data = str(args.get("data", dataset))
+    data_path = str(args.get("data_path", ""))
+    dataset_key = dataset.lower()
+    if data in {"ETTh1", "ETTh2", "ETTm1", "ETTm2"}:
         args["root_path"] = str(Path(data_root).expanduser() / "ETT-small")
+    elif dataset_key == "weather" or data_path == "weather.csv":
+        args["root_path"] = str(Path(data_root).expanduser() / "weather")
 
 
 def _eval_run_id(clean_run_id: str, corruption_type: str) -> str:
@@ -111,7 +139,8 @@ def _build_eval_command(
     snapshot = _read_json(_resolve_index_path(row["config"], repo_root))
     manifest = snapshot["manifest"]
     args = dict(manifest["args"])
-    _resolve_root_path(args, data_root)
+    dataset = _manifest_dataset(snapshot)
+    _resolve_root_path(args, dataset, data_root)
 
     eval_run_id = _eval_run_id(clean_run_id, corruption_type)
     output_dir = output_root / "eval_runs" / corruption_type / eval_run_id
@@ -164,7 +193,8 @@ def _collect_results(index_rows: list[dict[str, str]], output_root: Path, corrup
     for row in sorted(index_rows, key=_run_sort_key):
         clean_run_id = row["run_id"]
         snapshot = _read_json(_resolve_index_path(row["config"], REPO_ROOT))
-        args = snapshot["manifest"]["args"]
+        manifest = snapshot["manifest"]
+        args = manifest["args"]
         model = str(args["model"])
         pred_len = int(args["pred_len"])
         clean_metrics = _read_json(_resolve_index_path(row["metrics"], REPO_ROOT))
@@ -176,7 +206,7 @@ def _collect_results(index_rows: list[dict[str, str]], output_root: Path, corrup
                 continue
             corrupt_metrics = _read_json(corrupt_path)
             result: dict[str, Any] = {
-                "dataset": str(args["data"]),
+                "dataset": str(manifest.get("dataset") or args["data"]),
                 "model": model,
                 "pred_len": pred_len,
                 "clean_run_id": clean_run_id,
@@ -188,6 +218,7 @@ def _collect_results(index_rows: list[dict[str, str]], output_root: Path, corrup
                 corrupt_value = float(corrupt_metrics[key])
                 result[f"clean_{key}"] = clean_value
                 result[f"corrupt_{key}"] = corrupt_value
+                result[f"delta_{key}_abs"] = corrupt_value - clean_value
                 result[f"delta_{key}_pct"] = ((corrupt_value - clean_value) / clean_value * 100.0) if clean_value else 0.0
             results.append(result)
     return results
@@ -221,32 +252,34 @@ def _summarize(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         for key in ("mse", "rmse", "mae"):
             out[f"avg_clean_{key}"] = statistics.fmean(float(row[f"clean_{key}"]) for row in group)
             out[f"avg_corrupt_{key}"] = statistics.fmean(float(row[f"corrupt_{key}"]) for row in group)
+            out[f"avg_delta_{key}_abs"] = statistics.fmean(float(row[f"delta_{key}_abs"]) for row in group)
             out[f"avg_delta_{key}_pct"] = statistics.fmean(float(row[f"delta_{key}_pct"]) for row in group)
         summary.append(out)
     return summary
 
 
 def _write_latex_table(path: Path, summary: list[dict[str, Any]]) -> None:
-    by_model: dict[str, dict[str, dict[str, Any]]] = {}
+    by_dataset_model: dict[tuple[str, str], dict[str, dict[str, Any]]] = {}
     for row in summary:
-        by_model.setdefault(str(row["model"]), {})[str(row["corruption_type"])] = row
+        key = (str(row["dataset"]), str(row["model"]))
+        by_dataset_model.setdefault(key, {})[str(row["corruption_type"])] = row
 
     lines = [
-        "\\begin{tabular}{lrrrrr}",
+        "\\begin{tabular}{llrrrrr}",
         "\\toprule",
-        "Model & Clean MSE & Spike MSE & Spike $\\Delta$MSE & Segment MSE & Segment $\\Delta$MSE \\\\",
+        "Dataset & Model & Clean MSE & Spike MSE & Spike $\\Delta$MSE & Segment MSE & Segment $\\Delta$MSE \\\\",
         "\\midrule",
     ]
-    for model in sorted(by_model, key=_model_order):
-        spike = by_model[model].get("spike", {})
-        segment = by_model[model].get("segment", {})
+    for dataset, model in sorted(by_dataset_model, key=lambda item: (item[0], _model_order(item[1]))):
+        spike = by_dataset_model[(dataset, model)].get("spike", {})
+        segment = by_dataset_model[(dataset, model)].get("segment", {})
         clean_mse = spike.get("avg_clean_mse", segment.get("avg_clean_mse", float("nan")))
         lines.append(
-            f"{model} & {clean_mse:.4f} & "
+            f"{dataset} & {model} & {clean_mse:.4f} & "
             f"{spike.get('avg_corrupt_mse', float('nan')):.4f} & "
-            f"{spike.get('avg_delta_mse_pct', float('nan')):.2f}\\% & "
+            f"{spike.get('avg_delta_mse_abs', float('nan')):.4f} & "
             f"{segment.get('avg_corrupt_mse', float('nan')):.4f} & "
-            f"{segment.get('avg_delta_mse_pct', float('nan')):.2f}\\% \\\\"
+            f"{segment.get('avg_delta_mse_abs', float('nan')):.4f} \\\\"
         )
     lines.extend(["\\bottomrule", "\\end{tabular}", ""])
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -258,6 +291,8 @@ def main() -> None:
     parser.add_argument("--clean-index", default="artifacts/revision/r3_1_noise_robustness/clean_checkpoints/index.tsv")
     parser.add_argument("--clean-runs-root", default=os.environ.get("CLEAN_RUNS_ROOT") or os.environ.get("OUTPUT_ROOT") or "artifacts/runs")
     parser.add_argument("--output-root", default="artifacts/revision/r3_1_noise_robustness")
+    parser.add_argument("--run-glob", default="r3_1_clean_*_s2023_pl*")
+    parser.add_argument("--datasets", default="", help="Optional comma-separated dataset filter, e.g. Weather,ETTm2.")
     parser.add_argument("--corruption-types", default="spike,segment")
     parser.add_argument("--corruption-rate", type=float, default=0.05)
     parser.add_argument("--corruption-amp", type=float, default=3.0)
@@ -271,7 +306,13 @@ def main() -> None:
     args = parser.parse_args()
 
     repo_root = REPO_ROOT
-    index_rows = _load_clean_rows((repo_root / args.clean_index).resolve(), (repo_root / args.clean_runs_root).resolve())
+    dataset_filter = _parse_dataset_filter(args.datasets)
+    index_rows = _load_clean_rows(
+        (repo_root / args.clean_index).resolve(),
+        (repo_root / args.clean_runs_root).resolve(),
+        args.run_glob,
+        dataset_filter,
+    )
     output_root = (repo_root / args.output_root).resolve()
     corruption_types = [item.strip() for item in args.corruption_types.split(",") if item.strip()]
 
