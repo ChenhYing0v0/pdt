@@ -117,7 +117,9 @@ def _build_eval_command(
     output_dir = output_root / "eval_runs" / corruption_type / eval_run_id
     args.update(
         {
+            "task_name": "long_term_forecast",
             "is_training": 0,
+            "model_id": f"{str(args['data']).lower()}_pl{int(args['pred_len'])}",
             "checkpoint_path": str(_resolve_index_path(row["checkpoint"], repo_root)),
             "output_dir": str(output_dir),
             "run_id": eval_run_id,
@@ -145,8 +147,16 @@ def _run_command(repo_root: Path, output_dir: Path, command: list[str], gpu: str
     if gpu:
         env["CUDA_VISIBLE_DEVICES"] = gpu
 
-    with (output_dir / "eval.log").open("w", encoding="utf-8") as log_handle:
-        subprocess.run(command, cwd=repo_root, env=env, stdout=log_handle, stderr=subprocess.STDOUT, check=True)
+    log_path = output_dir / "eval.log"
+    with log_path.open("w", encoding="utf-8") as log_handle:
+        try:
+            subprocess.run(command, cwd=repo_root, env=env, stdout=log_handle, stderr=subprocess.STDOUT, check=True)
+        except subprocess.CalledProcessError as exc:
+            tail = log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-80:]
+            print(f"Command failed with exit code {exc.returncode}: {' '.join(command)}", file=sys.stderr)
+            print(f"--- tail of {log_path} ---", file=sys.stderr)
+            print("\n".join(tail), file=sys.stderr)
+            raise
 
 
 def _collect_results(index_rows: list[dict[str, str]], output_root: Path, corruption_types: list[str]) -> list[dict[str, Any]]:
