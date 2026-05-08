@@ -1,0 +1,7 @@
+{
+  "source": "baselines/PDT_old nested clone",
+  "branch": "EU-mask-local-20260508",
+  "commit": "a7efffbb02e6e7bae26f82e741701a2df60448c2",
+  "imported_at": "2026-05-08T14:16:53+0800",
+  "note": "Internal .git directory removed so this code is managed by the parent R_2026_PDT repository."
+}

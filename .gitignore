@@ -35,3 +35,4 @@ manuscript/**/build/
 *.xdv
 
 old/
+manuscript/

@@ -1,6 +1,6 @@
 # PDT old/R2Linear Reproduction Alignment
 
-本文记录 2026-05-08 对当前 `baselines/PDT` 与 `old/R2Linear` 复现实验入口的对齐边界。
+本文记录 2026-05-08 对当前 `baselines/PDT` 与 old R2Linear 复现实验入口的对齐边界。第二轮排查中，真实 old repository 已被放入 `baselines/PDT_old`，其分支为 `EU-mask-local-20260508`。
 
 ## 1. 数据加载与 `drop_last`
 
@@ -45,3 +45,24 @@
 仍然只是 proxy 的部分：截图未提供 Traffic 的三参，因此 Traffic 目前不能声称已完整复现截图设定；此外本轮只做入口和实现对齐，没有运行完整训练验证结果是否回到 old 水平。
 
 可证伪证据：若在相同数据、矩阵文件、seed、CUDA 环境下，当前 `baselines/PDT` 与 `old/R2Linear` 的 resolved CLI、数据切分、`LinearEncoder` forward 中间张量形状均一致，但指标仍显著偏离，则需要继续比较 optimizer/scheduler、early stopping checkpoint 选择、RevIN/normalization、metrics artifact 读取路径和 test-time output inverse transform。
+
+## 5. 第二轮重构：以 `PDT_old` 为基准
+
+实验结果显示参数和局部 `LinearEncoder` 对齐后仍存在显著差距。静态 diff 进一步确认：此前当前 `baselines/PDT` 是 protocol 化后的近似实现，不是 `baselines/PDT_old` 的逐文件复刻；差异覆盖 `run.py`、`exp`、`data_provider`、`layers`、`models`、`utils`，其中任何一个清理改写都可能改变训练轨迹。
+
+本轮已按“完全复刻 old 版本”的优先级重构当前 PDT：
+
+- `baselines/PDT/models/PDT.py` 直接复制自 `baselines/PDT_old/models/R2Linear.py`。
+- `baselines/PDT/models/R2Linear.py`、`baselines/PDT/layers/Linear_EncDec.py`、`baselines/PDT/data_provider/data_loader.py` 已与 `PDT_old` 对应文件保持内容一致。
+- `baselines/PDT/data_provider/`、`baselines/PDT/layers/`、`baselines/PDT/models/`、`baselines/PDT/utils/` 已补回 old 版依赖文件，避免 `Linear_EncDec.py` 和 old model import 路径漂移。
+- `baselines/PDT/exp/exp_long_term_forecasting.py` 恢复 old 训练、验证、测试循环和 old `metric_collector`，只额外在 protocol `output_dir` 存在时写出 `metrics.json`。
+- `baselines/PDT/run.py` 以 old `run_IN.py` 为主体，仅增加新架构必要适配：`--seed` 作为 `--fix_seed` alias、`--output_dir/run_id/metric_policy/selection_policy/skip_predictions` 参数、相对路径按 `baselines/PDT` 解析、`--model PDT` 入口、以及 optional `setproctitle`。
+- `baselines/PDT/exp/exp_basic.py` 只保留 `PDT` 和 `R2Linear` 映射，避免导入无关 old model zoo 影响 PDT 启动。
+
+保留的新架构差异是运行外壳层面的，不进入 PDT forward 或训练目标：
+
+- protocol runner 仍调用 `baselines/PDT/run.py` 并传入 `--output_dir`。
+- `run.py` 在 protocol 模式下把 `checkpoints/results/test_results/log_path` 放入 run directory。
+- 结果额外保存 `metrics.json`，便于新架构收集指标。
+
+本地验证边界：当前本机默认 Python 环境缺少 `torch`，无法执行 forward 或训练级 A/B；已完成 `py_compile`、所有 PDT manifest dry-run、核心文件与 `PDT_old` 的静态等价检查。

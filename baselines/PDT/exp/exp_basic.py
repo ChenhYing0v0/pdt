@@ -1,19 +1,19 @@
-from __future__ import annotations
-
 import os
+import shutil
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
-from models import PDT
+from models import PDT, R2Linear
 from utils.tools import ensure_path
 
 
-class Exp_Basic:
+class Exp_Basic(object):
     def __init__(self, args):
         self.args = args
         self.model_dict = {
             "PDT": PDT,
+            "R2Linear": R2Linear,
         }
         self.device = self._acquire_device()
         self.model = self._build_model().to(self.device)
@@ -42,7 +42,17 @@ class Exp_Basic:
         return device
 
     def _create_writer(self, log_dir):
-        ensure_path(log_dir)
+        item_list = os.listdir(log_dir)
+        item_path_list = [os.path.join(log_dir, item) for item in item_list]
+        item_path_list = [item_path for item_path in item_path_list if os.path.isfile(item_path)]
+        if len(item_path_list) > 0:
+            pre_log_dir = os.path.join(log_dir, "pre_logs")
+            ensure_path(pre_log_dir)
+
+            item_list = [os.path.basename(item_path) for item_path in item_path_list]
+            for item, item_path in zip(item_list, item_path_list):
+                shutil.move(item_path, os.path.join(pre_log_dir, item))
+
         return SummaryWriter(log_dir)
 
     def _get_data(self):

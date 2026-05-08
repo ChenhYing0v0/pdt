@@ -1,5 +1,5 @@
-import json
 import os
+import json
 import time
 import warnings
 
@@ -10,7 +10,8 @@ from torch import optim
 
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
-from protocol.metrics import compute_metrics
+from utils.metrics import metric
+from utils.metrics_torch import create_metric_collector, metric_torch
 from utils.polynomial import (chebyshev_torch, hermite_torch, laguerre_torch,
                               leg_torch)
 from utils.tools import (EarlyStopping, adjust_learning_rate, ensure_path,
@@ -53,12 +54,12 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         return model_optim
 
     def _select_criterion(self):
+        # criterion = nn.MSELoss()
         if self.args.loss_mode == 'L1':
             criterion = nn.L1Loss()
         elif self.args.loss_mode == 'L2':
             criterion = nn.MSELoss()
-        else:
-            raise ValueError(f"Unsupported loss_mode: {self.args.loss_mode}")
+        
         return criterion
 
     def _export_linear_encoder_A(self, output_dir):
@@ -256,9 +257,6 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
                         self.writer.add_scalar(f'{self.pred_len}/train/loss_auxi', loss_auxi, self.step)
 
-                    if not self.args.rec_lambda and not self.args.auxi_lambda:
-                        loss = criterion(outputs, batch_y)
-
                     train_loss.append(loss.item())
 
                 # log alpha (supports DataParallel and single model)
@@ -308,7 +306,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
             adjust_learning_rate(model_optim, epoch + 1, self.args)
 
         best_model_path = os.path.join(path, 'checkpoint.pth')
-        self.model.load_state_dict(torch.load(best_model_path, map_location=self.device))
+        self.model.load_state_dict(torch.load(best_model_path))
 
         print("Training finished")
         self._export_linear_encoder_A(res_path)
@@ -325,9 +323,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         test_data, test_loader = self._get_data(flag='test')
         if test:
             print('loading model')
-            self.model.load_state_dict(
-                torch.load(os.path.join(self.args.checkpoints, setting, 'checkpoint.pth'), map_location=self.device)
-            )
+            self.model.load_state_dict(torch.load(os.path.join(self.args.checkpoints, setting, 'checkpoint.pth')))
 
         inputs, preds, trues = [], [], []
         folder_path = os.path.join(self.args.test_results, setting)
@@ -339,6 +335,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 self.model.is_test = True
 
         self.model.eval()
+        metric_collector = create_metric_collector(device=self.device)
         with torch.no_grad():
             for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(test_loader):
                 batch_x = batch_x.float().to(self.device)
@@ -382,15 +379,16 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 outputs = outputs[:, :, f_dim:].contiguous()
                 batch_y = batch_y[:, :, f_dim:].contiguous()
 
-                pred = outputs.cpu().numpy()
-                true = batch_y.cpu().numpy()
-                preds.append(pred)
-                trues.append(true)
+                metric_collector.update(outputs, batch_y)
 
                 if self.output_pred or self.output_vis:
                     inp = batch_x.cpu().numpy()
+                    pred = outputs.cpu().numpy()
+                    true = batch_y.cpu().numpy()
 
                     inputs.append(inp)
+                    preds.append(pred)
+                    trues.append(true)
 
                 if i % 20 == 0 and self.output_vis:
                     input = batch_x.detach().cpu().numpy()
@@ -401,16 +399,15 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     pd = np.concatenate((input[0, :, -1], pred[0, :, -1]), axis=0)
                     visual(gt, pd, os.path.join(folder_path, str(i) + '.pdf'))
 
-        preds = np.asarray(preds)
-        trues = np.asarray(trues)
-        print('test shape:', preds.shape, trues.shape)
-        preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
-        trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
-        print('test shape:', preds.shape, trues.shape)
-
         if self.output_pred:
-            inputs = np.asarray(inputs)
+            inputs = np.array(inputs)
+            preds = np.array(preds)
+            trues = np.array(trues)
+            print('test shape:', preds.shape, trues.shape)
             inputs = inputs.reshape(-1, inputs.shape[-2], inputs.shape[-1])
+            preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
+            trues = trues.reshape(-1, trues.shape[-2], trues.shape[-1])
+            print('test shape:', preds.shape, trues.shape)
 
         # result save
         res_path = os.path.join(self.args.results, setting)
@@ -418,7 +415,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         if self.writer is None:
             self.writer = self._create_writer(res_path)
 
-        m = compute_metrics(preds, trues)
+        m = metric_collector.compute()
         mae, mse, rmse, mape, mspe = m["mae"], m["mse"], m["rmse"], m["mape"], m["mspe"]
         self.writer.add_scalar(f'{self.pred_len}/test/mae', mae, self.epoch)
         self.writer.add_scalar(f'{self.pred_len}/test/mse', mse, self.epoch)
@@ -428,29 +425,22 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         self.writer.close()
 
         print('{}\t| mse:{}, mae:{}'.format(self.pred_len, mse, mae))
-        print(f'protocol_metrics: {json.dumps(m, sort_keys=True)}')
         log_path = "result_long_term_forecast.txt" if not self.args.log_path else self.args.log_path
         f = open(log_path, 'a')
         f.write(setting + "\n")
-        f.write(json.dumps(m, sort_keys=True))
+        f.write('mse:{}, mae:{}'.format(mse, mae))
         f.write('\n\n')
         f.close()
 
         np.save(os.path.join(res_path, 'metrics.npy'), np.array([mae, mse, rmse, mape, mspe]))
-        with open(os.path.join(self.args.output_dir, 'metrics.json'), 'w', encoding='utf-8') as handle:
-            json.dump(m, handle, indent=2, sort_keys=True)
+        if getattr(self.args, 'output_dir', ''):
+            with open(os.path.join(self.args.output_dir, 'metrics.json'), 'w', encoding='utf-8') as f_json:
+                json.dump(m, f_json, indent=2, sort_keys=True)
 
         if self.output_pred:
             np.save(os.path.join(res_path, 'input.npy'), inputs)
             np.save(os.path.join(res_path, 'pred.npy'), preds)
             np.save(os.path.join(res_path, 'true.npy'), trues)
-
-        if not self.args.skip_predictions:
-            np.savez(
-                os.path.join(self.args.output_dir, 'predictions.npz'),
-                pred=preds,
-                true=trues,
-            )
 
         if self.args.save_cov:
             # 标记test阶段结束
