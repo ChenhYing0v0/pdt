@@ -38,6 +38,9 @@ Always use the global helper under `~/.codex/scripts/`.
 
 - Use Chinese in responses and keep technical terms in English.
 - Unless explicitly requested otherwise, write analysis reports in Chinese.
+- Unless explicitly requested otherwise, write plan documents and explanatory
+  documents in Chinese; keep technical terms, file names, code identifiers, and
+  fixed proper nouns in English.
 - Keep tone direct, concrete, and audit-oriented.
 - Separate confirmed facts from inference explicitly.
 - For code-grounded model explanations, describe tensor transformations through

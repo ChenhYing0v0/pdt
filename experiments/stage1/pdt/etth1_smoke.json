@@ -4,10 +4,10 @@
   "dataset": "ETTh1",
   "seq_len": 96,
   "pred_len": 96,
-  "seed": 2026,
+  "seed": 2023,
   "search_budget": {
     "trials": 1,
-    "policy": "smoke"
+    "policy": "fixed_reproduction"
   },
   "entry": "baselines/PDT/run.py",
   "args": {
@@ -25,12 +25,15 @@
     "d_model": 512,
     "d_ff": 512,
     "e_layers": 2,
-    "batch_size": 8,
+    "d_layers": 1,
+    "factor": 3,
+    "batch_size": 32,
+    "num_workers": 8,
     "learning_rate": 0.0005,
-    "train_epochs": 1,
-    "patience": 1,
+    "train_epochs": 30,
+    "patience": 8,
+    "lradj": "type1",
     "itr": 1,
-    "num_workers": 0,
     "model": "PDT",
     "q_mat_file": "dataset/RRR_mats/ETTh1/ETTh1_RRR_L96_R96_H96_Qin.npy",
     "q_out_mat_file": "dataset/PCCA_mats/ETTh1/ETTh1_PCCA_OUT_H96_identity_avg.npy",
@@ -43,9 +46,12 @@
     "loss_mode": "L1",
     "rec_lambda": 1.0,
     "auxi_lambda": 0.0,
-    "alpha_init": 0.1,
-    "mask_threshold": 0.25,
-    "des": "PDTSmoke"
+    "Q_chan_indep": 0,
+    "freeze_R": 0,
+    "CKA_flag": 0,
+    "alpha_init": 0.15,
+    "mask_threshold": 0.05,
+    "des": "FixedPDT"
   },
   "env": {
     "DATA_ROOT": "${DATA_ROOT}",

@@ -3,6 +3,7 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.functional import gumbel_softmax
 
 
 class SigmoidThreshold(nn.Module):
@@ -37,6 +38,18 @@ class Mahalanobis_mask(nn.Module):
 
         diag = torch.eye(probs.shape[-1], device=probs.device).unsqueeze(0)
         return (probs * off_diag_mask + diag) * 0.99
+    
+    def bernoulli_gumbel_rsample(self, distribution_matrix):
+        # 使用 Gumbel-Softmax 进行伯努利采样
+        log_prob = torch.log(distribution_matrix / (1 - distribution_matrix + 1e-10))
+        # gumbel_softmax 需要 (..., num_classes)
+        # 我们模拟二分类 [prob_false, prob_true]
+        log_probs_paired = torch.stack([torch.log(1 - distribution_matrix + 1e-10), torch.log(distribution_matrix + 1e-10)], dim=-1)
+        
+        resample_matrix = gumbel_softmax(log_probs_paired, hard=True)
+
+        # 取样为1的概率
+        return resample_matrix[..., 1]
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         probabilities = self.calculate_prob_distance(inputs)
@@ -86,6 +99,10 @@ class LinearEncoder(nn.Module):
         d_ff = d_ff or 4 * d_model
         if token_num is None:
             raise ValueError("token_num is required for LinearEncoder.")
+        self.d_model = d_model
+        self.d_ff = d_ff
+        self.CovMat = CovMat.unsqueeze(0) if CovMat is not None else None
+        self.token_num = token_num
 
         self.norm1 = nn.LayerNorm(d_model)
         self.dropout = nn.Dropout(dropout)
@@ -105,22 +122,23 @@ class LinearEncoder(nn.Module):
         return F.normalize(self._compute_attention_base(), p=1, dim=-1).detach()
 
     def forward(self, x: torch.Tensor, attn_mask=None, **kwargs):
-        batch_size = x.shape[0]
         values = self.v_proj(x)
-        attn = self._compute_attention_base()
+        attn_base = self._compute_attention_base()
 
         if attn_mask is not None:
             if attn_mask.dim() == 4:
                 attn_mask = attn_mask.squeeze(1)
-            attn = attn * attn_mask
+            attn_masked = attn_base * attn_mask
         else:
-            attn = attn.expand(batch_size, -1, -1)
+            attn_masked = attn_base
 
-        attn = F.normalize(attn, p=1, dim=-1)
-        context = torch.bmm(attn, values)
-        x = x + self.dropout(self.out_proj(context))
-        y = self.norm1(x)
-        y = self.dropout(self.activation(self.conv1(y.transpose(-1, -2))))
+        attn = F.normalize(attn_masked, p=1, dim=-1)
+        attn = self.dropout(attn)
+
+        new_x = attn @ values
+        x = x + self.dropout(self.out_proj(new_x))
+        x = self.norm1(x)
+        y = self.dropout(self.activation(self.conv1(x.transpose(-1, -2))))
         y = self.dropout(self.conv2(y).transpose(-1, -2))
         out = self.norm2(x + y)
-        return out, attn
+        return out, None

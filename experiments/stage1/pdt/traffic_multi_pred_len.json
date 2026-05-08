@@ -3,8 +3,8 @@
   "stage": "stage1_backbone_init",
   "dataset": "Traffic",
   "seq_len": 96,
-  "pred_len": [96],
-  "seed": 2026,
+  "pred_len": 96,
+  "seed": 2023,
   "search_budget": {
     "trials": 1,
     "policy": "fixed_reproduction"
@@ -25,10 +25,14 @@
     "d_model": 512,
     "d_ff": 512,
     "e_layers": 3,
-    "batch_size": 32,
+    "d_layers": 1,
+    "factor": 3,
+    "batch_size": 16,
+    "num_workers": 8,
     "learning_rate": 0.0005,
     "train_epochs": 50,
     "patience": 5,
+    "lradj": "cosine",
     "itr": 1,
     "model": "PDT",
     "q_mat_file": "dataset/RRR_mats/traffic/traffic_RRR_L96_R96_H96_Qin.npy",
@@ -42,9 +46,12 @@
     "loss_mode": "L1",
     "rec_lambda": 1.0,
     "auxi_lambda": 0.0,
+    "Q_chan_indep": 0,
+    "freeze_R": 0,
+    "CKA_flag": 0,
     "alpha_init": 0.1,
     "mask_threshold": 0.15,
-    "des": "PDTInit"
+    "des": "FixedPDT"
   },
   "env": {
     "DATA_ROOT": "${DATA_ROOT}",
