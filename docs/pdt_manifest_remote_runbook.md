@@ -2,7 +2,18 @@
 
 ## 目标
 
-本说明记录 PDT baseline 通过 protocol manifest 在远程服务器启动的最小闭环。当前验证边界是 syntax、JSON parse、manifest dry-run 和 shell wrapper dry-run；真实训练成功需要在远程服务器具备 conda 环境、CUDA、数据集和 PDT 矩阵文件后确认。
+本说明记录 PDT baseline 通过 protocol manifest 在远程服务器启动的最小闭环。当前 PDT canonical route 已由远程实验确认：该路径与之前 old version 实验结果完全一致，后续所有 PDT 相关实验均固定走此路径。
+
+Canonical route:
+
+```text
+scripts/remote/run_manifest.sh
+  -> python -m protocol.runners.run_manifest
+  -> protocol/runners/pdt.py
+  -> baselines/PDT/run.py
+```
+
+`baselines/PDT/` 是已按 `baselines/PDT_old` old-clone 复刻并验证的运行目录；`baselines/PDT_old/` 只保留为来源快照和静态对照，不作为后续实验入口。
 
 ## 功能模块
 
@@ -28,7 +39,9 @@ PDT 仓库不再注册 `fredr`，避免缺失 `protocol.runners.fredr` 时阻断
 - `metric_policy`
 - `selection_policy`
 
-命令以 `python -u baselines/PDT/run.py ...` 形式执行，环境由 `protocol/runners/common.py` 构造，并把 repo root 加入 `PYTHONPATH`。
+命令固定以 `python -u baselines/PDT/run.py ...` 形式执行，环境由 `protocol/runners/common.py` 构造，并把 repo root 加入 `PYTHONPATH`。
+
+`protocol/runners/pdt.py` 会检查 manifest 中的 `entry` 是否等于 `baselines/PDT/run.py`。如果未来 PDT manifest 指向其它入口，runner 会直接报错，避免绕开已验证路径。
 
 ### Remote wrapper
 
@@ -68,4 +81,6 @@ scripts/remote/run_manifest.sh experiments/stage1/pdt/etth1_smoke.json smoke_ett
 
 ## 验证边界
 
-本地 dry-run 只能证明 manifest 展开、CLI 参数转发、输出目录快照和 wrapper 拼接是可执行路径；它不会证明数据可读、CUDA 可用、训练收敛或 KBS 返修实验结果已经复现。
+本地 dry-run 只能证明 manifest 展开、CLI 参数转发、输出目录快照和 wrapper 拼接是可执行路径；它不会证明数据可读、CUDA 可用或训练收敛。
+
+2026-05-08 远程实验已确认 canonical PDT route 可以正常完成实验，并且结果与之前 old version 实验结果完全一致。因此后续 PDT 实验的复现基准不是 `baselines/PDT_old/run_IN.py` 直接启动，而是通过上述 protocol route 调用 `baselines/PDT/run.py`。

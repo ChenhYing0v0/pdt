@@ -66,3 +66,21 @@
 - 结果额外保存 `metrics.json`，便于新架构收集指标。
 
 本地验证边界：当前本机默认 Python 环境缺少 `torch`，无法执行 forward 或训练级 A/B；已完成 `py_compile`、所有 PDT manifest dry-run、核心文件与 `PDT_old` 的静态等价检查。
+
+## 6. Canonical PDT route 固定
+
+2026-05-08 远程实验确认：当前 protocol 路径已恢复正常，训练结果与之前 old version 实验结果完全一致。后续所有 PDT 相关实验固定走以下路径：
+
+```text
+scripts/remote/run_manifest.sh
+  -> python -m protocol.runners.run_manifest
+  -> protocol/runners/pdt.py
+  -> baselines/PDT/run.py
+```
+
+执行约束：
+
+- `baselines/PDT/` 是后续 PDT 实验的唯一运行目录。
+- `baselines/PDT_old/` 只作为 old-clone 来源快照和静态对照，不直接作为实验入口。
+- `experiments/stage1/pdt/*.json` 的 `entry` 必须保持为 `baselines/PDT/run.py`。
+- `protocol/runners/pdt.py` 已加入入口检查；若 PDT manifest 指向其它入口，会直接报错，防止再次引入实验路径漂移。

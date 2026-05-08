@@ -1,3 +1,3 @@
-from . import PDT, R2Linear
+from . import DLinear, PDT, R2Linear
 
-__all__ = ["PDT", "R2Linear"]
+__all__ = ["DLinear", "PDT", "R2Linear"]

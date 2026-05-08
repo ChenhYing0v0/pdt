@@ -1,0 +1,42 @@
+{
+  "baseline": "itransformer",
+  "stage": "revision_r3_1_clean_checkpoint",
+  "dataset": "ETTh1",
+  "seq_len": 96,
+  "pred_len": [96, 192, 336, 720],
+  "seed": 2023,
+  "search_budget": {
+    "trials": 1,
+    "policy": "fixed_reproduction"
+  },
+  "entry": "baselines/itransformer/run.py",
+  "args": {
+    "data": "ETTh1",
+    "root_path": "${DATA_ROOT}/ETT-small/",
+    "data_path": "ETTh1.csv",
+    "features": "M",
+    "target": "OT",
+    "freq": "h",
+    "seq_len": 96,
+    "label_len": 48,
+    "enc_in": 7,
+    "dec_in": 7,
+    "c_out": 7,
+    "d_model": [256, 256, 512, 512],
+    "d_ff": [256, 256, 512, 512],
+    "e_layers": [2, 2, 2, 2],
+    "batch_size": [32, 32, 32, 32],
+    "learning_rate": 0.0001,
+    "train_epochs": 10,
+    "patience": 3,
+    "itr": 1,
+    "model": "iTransformer",
+    "des": "R3_1Clean"
+  },
+  "env": {
+    "DATA_ROOT": "${DATA_ROOT}",
+    "CUDA_VISIBLE_DEVICES": "0"
+  },
+  "metric_policy": "forecasting_v1",
+  "selection_policy": "best_val_mse"
+}

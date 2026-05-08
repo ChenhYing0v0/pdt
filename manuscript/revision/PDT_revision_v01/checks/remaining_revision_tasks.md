@@ -75,14 +75,20 @@
 
 - Phase 5 逐条 action matrix 已形成独立文档：
   `manuscript/revision/PDT_revision_v01/checks/phase5_reviewer_comment_action_matrix.md`。
-  该文档已完成每条 comment 的 required action、manuscript change、experiment need、
-  response strategy 和英文 response draft；后续实际正文/Word 文件修改应以该文档为入口。
+  该文档已根据 2026-05-08 用户审阅反馈更新为 user-reviewed execution plan，
+  并拆分为“需要重跑实验或等待实验结果的任务”和“仅需文字修改、证明、合规准备的任务”。
+  后续实际正文/Word 文件修改应以该文档为入口。
 - Reviewer #1.1：PDTM motivation 与 FreDF/TransDF 概念对比。
 - Reviewer #1.2：PDTM derivation intuition，CCA / low-rank regression 解释。
 - Reviewer #1.3：notation consistency 与 symbol table。
 - Reviewer #1.4：rank、Top-K、MCD mask hyperparameters。
 - Reviewer #1.5：MCD learned mask interpretability。
-- Reviewer #3.1：noise/anomaly injection robustness tests。
+- Reviewer #3.1：noise/anomaly injection robustness tests。实验意图与最小设计已落地到
+  `manuscript/revision/PDT_revision_v01/checks/r3_1_noise_anomaly_robustness_experiment_design.md`；
+  当前执行范围已收敛为 ETTh1 全 horizon，ECL 因训练耗时和单 `pred_len` 展示问题暂缓。
+  clean checkpoint manifests、DLinear protocol runner、远程训练脚本和回传归档脚本已落地。
+  后续仍需在远程训练机运行 clean checkpoint 训练，再按该设计补 test-time corruption
+  评估代码、运行实验并回填结果。
 - Reviewer #3.2：key hyperparameter sensitivity。
 - Reviewer #3.3：补充 RMSE 或相对误差指标。
 - Reviewer #3.4：graph neural network baselines。
@@ -92,5 +98,8 @@
 ## 建议下一步
 
 1. 先确认 code release route 和 declaration of interest。
-2. 然后进入 reviewer comments action matrix，决定哪些要做实验，哪些只做文字/理论澄清。
+2. 按 Phase 5 action matrix 并行推进：实验侧优先 robustness、Top-K/mask threshold
+   sensitivity、GNN baselines 和 MCD mask interpretability；文字侧优先 FreDF/TransDF
+   深读、Appendix proof、symbol table、Top-K theory boundary 和 anonymized code
+   repository 方案。
 3. 最后填充 `Response_to_Reviewers.docx`，并把 reviewer-specific changes 追加到 `List_of_Changes.docx`，同步修改 LaTeX manuscript。

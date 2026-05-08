@@ -6,17 +6,17 @@ from protocol.manifests import Manifest
 from protocol.runners.common import build_base_env, build_cli_args
 
 
-CANONICAL_PDT_ENTRY = Path("baselines/PDT/run.py")
+CANONICAL_DLINEAR_ENTRY = Path("baselines/PDT/run.py")
 
 
 def build_command(repo_root: Path, manifest: Manifest, run_dir: Path) -> tuple[list[str], dict[str, str]]:
     args = dict(manifest.args)
     if not isinstance(manifest.pred_len, int):
-        raise TypeError("PDT builder expects a single pred_len after manifest expansion.")
-    if manifest.repo_relative_entry != CANONICAL_PDT_ENTRY:
+        raise TypeError("DLinear builder expects a single pred_len after manifest expansion.")
+    if manifest.repo_relative_entry != CANONICAL_DLINEAR_ENTRY:
         raise ValueError(
-            "PDT experiments must use the verified old-clone route "
-            f"{CANONICAL_PDT_ENTRY.as_posix()}, got {manifest.repo_relative_entry.as_posix()}."
+            "DLinear experiments must use the verified shared PDT model-zoo route "
+            f"{CANONICAL_DLINEAR_ENTRY.as_posix()}, got {manifest.repo_relative_entry.as_posix()}."
         )
 
     trials = manifest.search_budget.get("trials")
@@ -25,9 +25,10 @@ def build_command(repo_root: Path, manifest: Manifest, run_dir: Path) -> tuple[l
 
     args.setdefault("task_name", "long_term_forecast")
     args.setdefault("is_training", 1)
-    args.setdefault("model", "PDT")
+    args.setdefault("model", "DLinear")
     args.setdefault("model_id", f"{manifest.dataset.lower()}_pl{manifest.pred_len}")
-    args.setdefault("des", "protocol")
+    args.setdefault("des", "R3_1Clean")
+    args.setdefault("loss_mode", "L2")
     args["pred_len"] = manifest.pred_len
     args["seed"] = manifest.seed
     args["run_id"] = run_dir.name
@@ -35,7 +36,7 @@ def build_command(repo_root: Path, manifest: Manifest, run_dir: Path) -> tuple[l
     args["metric_policy"] = manifest.metric_policy
     args["selection_policy"] = manifest.selection_policy
 
-    entry = repo_root / CANONICAL_PDT_ENTRY
+    entry = repo_root / CANONICAL_DLINEAR_ENTRY
     command = ["python", "-u", str(entry), *build_cli_args(args)]
     env = build_base_env(repo_root, manifest)
     return command, env

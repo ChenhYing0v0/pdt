@@ -4,9 +4,9 @@ project: R_2026_PDT
 manuscript_id: KNOSYS-D-26-03771
 manuscript: PDT: Predictive Domain Transform for Multivariate Time Series Forecasting
 journal: Knowledge-Based Systems
-date: 2026-05-07
+date: 2026-05-08
 language: zh-CN
-status: draft-action-matrix
+status: user-reviewed-execution-plan
 ---
 
 # Phase 5 reviewer comments 逐条处理文档
@@ -84,6 +84,39 @@ comment 拆分为 `required action`、`manuscript change`、`experiment need`
   anonymized repository，应优先准备 anonymized/private-for-review link，或在 response
   中说明 repository is prepared for review with parameter settings.
 
+## 2026-05-08 用户审阅后的执行决策
+
+用户已审阅上一版 rebuttal action matrix，并将“接受”定义为接受该建议。当前执行边界更新如下：
+
+### Reviewer #1
+
+| Comment | 用户决策 | 更新后的处理口径 |
+|---|---|---|
+| R1.1 PDTM motivation 与 FreDF/TransDF 区分 | 接受 | 需要仔细研读 FreDF 和 TransDF 两篇论文后形成完整修改意见；不能只保留概念表，需给出论文级别的准确对比。 |
+| R1.2 PDTM derivation intuition | 部分接受 | 正文只补充必要推导直觉；完整证明过程放入 Appendix，避免主文过长。 |
+| R1.3 notation consistency 与 symbol table | 接受 | 按原计划执行：新增 symbol table，并统一/澄清关键符号。 |
+| R1.4 hyperparameters | 接受，待实验后处理 | 增加 Top-K 和 mask threshold sensitivity analysis；正文轻度描述 $K$ 与 mask threshold 的选择，不做过度机制扩展。 |
+| R1.5 MCD mask interpretability | 接受，待实验后选择数据集 | 等新增实验或复现实验结果完成后，再选择最有说服力的数据集展示 learned mask。 |
+
+### Reviewer #3
+
+| Comment | 用户决策 | 更新后的处理口径 |
+|---|---|---|
+| R3.1 robustness / anomaly injection | 接受，待补充实验后处理 | 在 ETTh1 等数据集上加噪声；对比 DLinear、iTransformer 等代表性模型；以尽量少的工作量完成定量支撑。 |
+| R3.2 sensitivity | 同 R1.4 | 与 R1.4 合并为同一组 Top-K / mask threshold sensitivity experiments。 |
+| R3.3 RMSE | 接受 | 主表不变；正文说明时序预测论文通常报告 MSE/MAE；Appendix 增加 RMSE 大表以增强说服力。 |
+| R3.4 GNN baselines | 接受 | 找 1-2 个开源且不依赖外部 topology 的 GNN 模型，尽量覆盖主表数据集；结果只放 Appendix；正文澄清 PDT 与 topology-based GNN 的研究重点不同。 |
+| R3.5 Top-K theory boundary | 接受 | 按原计划修改：证明 Top-K retained predictive energy 的 objective-level 最优性，同时承认 eigenvalue decay 是 data-dependent。 |
+| R3.6 anonymized code repository | 接受 | 需要给出 anonymized code repository 的具体实现方式、文件范围和 reviewer-facing URL 处理方案。 |
+
+### 更新后的总原则
+
+1. 主文保持克制：新增 clarification 和必要结果，不把主表继续扩张。
+2. Appendix 承担详细证明、RMSE 大表、GNN baseline 表和部分 sensitivity/robustness 细节。
+3. 实验路线以最小可接受补充为优先，不重做整篇论文。
+4. Response letter 中要明确“哪些实验新增在 Appendix，哪些文字澄清在主文”，避免 reviewer 认为只做了口头解释。
+5. 新增 citation 必须先核对来源，FreDF/TransDF 与 GNN baseline 的 BibTeX 不从记忆生成。
+
 ## Reviewer #1
 
 ### Reviewer #1.1 PDTM motivation 与 FreDF/TransDF 区分
@@ -157,6 +190,9 @@ transform.
 - 写入 response letter：是。
 - 写入 list of changes：是。
 - 新实验：否。
+- 用户审阅后更新：该项仍归入“仅需文字修改”，但前置动作是完整研读 FreDF 与
+  TransDF 原文，形成 source-faithful 修改意见；在完成研读前，不应直接写定
+  FreDF/TransDF 的方法目标与差异。
 
 ### Reviewer #1.2 PDTM derivation intuition
 
@@ -222,6 +258,9 @@ minimizes forecasting error under a rank constraint.
 - 写入 response letter：是。
 - 写入 list of changes：是。
 - 新实验：否。
+- 用户审阅后更新：该项为“部分接受”。正文只加入直觉性解释，完整证明放入
+  Appendix；response letter 应明确说明主文提升 readability，Appendix 提供完整
+  mathematical derivation。
 
 ### Reviewer #1.3 Notation consistency 与 symbol table
 
@@ -298,6 +337,7 @@ original input space.
 - 写入 response letter：是。
 - 写入 list of changes：是。
 - 新实验：否。
+- 用户审阅后更新：按原计划执行，归入“仅需文字修改”。
 
 ### Reviewer #1.4 Hyperparameter choice
 
@@ -372,6 +412,9 @@ sparse masks can reduce the retained predictive information.
 - 新实验：是，优先级高。
 - 验证：使用 canonical `experiments/stage1/pdt/*.json` 与
   `scripts/local/run_manifest.py` 生成变体；JSON parse + dry-run + 训练结果汇总。
+- 用户审阅后更新：该项归入“需要重跑实验”。只做 Top-K 与 mask threshold 的
+  sensitivity analysis；正文轻度说明选择原则，不扩展到 sharpness $k$ 的完整网格，
+  除非实验资源充足并放入 Appendix。
 
 ### Reviewer #1.5 MCD learned mask interpretability
 
@@ -436,6 +479,9 @@ filtering weak or noisy channel interactions.
 - 写入 list of changes：是。
 - 新实验：轻量分析；优先复用 checkpoint。
 - 验证：检查 `channel_mask.npy` / figure file 存在；统计脚本输出可复现 CSV。
+- 用户审阅后更新：先等待新增实验/复现实验结果，再选择最有说服力的数据集展示；
+  该项放入“需要实验结果支撑”的计划，但优先复用 checkpoint 和 saved mask，
+  不作为必须大规模重训项。
 
 ## Reviewer #3
 
@@ -509,6 +555,19 @@ module helps suppress interference from irrelevant or corrupted channels.
 - 新实验：是，优先级最高。
 - 验证：新增脚本 `analysis/` 或 `scripts/local/` 后运行 py_compile、dry-run、
   sample corruption sanity check。
+- 用户审阅后更新：该项归入“需要重跑实验”。实验范围按最小工作量控制：
+  当前先做 ETTh1 全 horizon。对比模型优先 DLinear、iTransformer 和 PDT；只有时间
+  足够且结果不足时再加入 ECL、Weather、PatchTST 或 PDT variants。
+- 2026-05-08 设计落地：已新增独立实验设计文档
+  `manuscript/revision/PDT_revision_v01/checks/r3_1_noise_anomaly_robustness_experiment_design.md`。
+  该设计确认 Reviewer #3(1) 的意图是 test-time anomaly injection 定量验证，
+  而非训练时噪声增强或泛化成 anomaly detection；当前最小实验集为 ETTh1 全 horizon，
+  比较 PDT、iTransformer、DLinear。
+- 2026-05-08 执行落地：用户确认 single seed `2023` 且 clean checkpoints 需重新训练。
+  已新增 clean checkpoint manifests、`DLinear` protocol runner、远程训练脚本
+  `scripts/remote/run_r3_1_clean_checkpoints.sh` 和 checkpoint 回传归档脚本
+  `scripts/remote/sync_r3_1_clean_checkpoints.sh`。ECL 暂不做，因为耗时较长且单
+  `pred_len` 不适合论文展示；首轮也不纳入 PDT-CD，如 ETTh1 结果不足再单独恢复。
 
 ### Reviewer #3.2 Key hyperparameter sensitivity
 
@@ -542,6 +601,7 @@ These findings have been added to the revised experimental section.
 **预计后续工作**
 
 - 与 Reviewer #1.4 共用实验和 manuscript section。
+- 用户审阅后更新：完全并入 R1.4，不单独开实验。
 
 ### Reviewer #3.3 RMSE or relative error metrics
 
@@ -597,6 +657,8 @@ keeping the main table readable.
 - 写入 list of changes：是。
 - 新实验：一般否；需要 metrics aggregation。
 - 验证：检查 `metrics.json` 中 `rmse` 字段；如通过 MSE 派生，记录公式。
+- 用户审阅后更新：主表不变。Appendix 增加 RMSE 大表；正文说明 MTSF 论文惯例
+  主要报告 MSE/MAE，同时补充 RMSE 以增强 cross-dataset reporting 的完整性。
 
 ### Reviewer #3.4 Graph neural network baselines
 
@@ -677,6 +739,10 @@ depend on known graph topology.
 - 写入 list of changes：是。
 - 新实验：建议做，优先级高。
 - 验证：新增 baseline 结果必须记录 config、seed、dataset split 和 artifact path。
+- 用户审阅后更新：该项归入“需要重跑实验”。选择 1-2 个开源、不依赖外部 topology
+  的 GNN 模型；尽量覆盖主表数据集；结果放 Appendix，不挤入主表。正文和 response
+  需澄清 PDT 学习 data-driven sparse channel relation，而 topology-based GNN 更强调
+  explicit graph/topology prior，二者重点不同。
 
 ### Reviewer #3.5 Top-K predictive information concentration theory boundary
 
@@ -745,6 +811,8 @@ or adaptively selected K.
 - 写入 response letter：是。
 - 写入 list of changes：是。
 - 新实验：否；建议补 energy ratio table。
+- 用户审阅后更新：按原计划执行，归入“仅需文字修改”。如补 energy ratio table，
+  属于从现有 PDTM eigenvalue artifacts 统计，不应作为重训实验。
 
 ### Reviewer #3.6 Anonymized code repository and parameter settings
 
@@ -808,44 +876,103 @@ results.
 - 写入 list of changes：是。
 - 新实验：否。
 - 外部确认：需要用户确认 anonymized/private-for-review route。
+- 用户审阅后更新：归入“仅需文字修改/提交合规准备”。需要单独给出 anonymized
+  code repository 实现方案，包括匿名化范围、配置文件、MACs/Memory 复现脚本、
+  README 和 URL 替换位置。
 
 ## Cross-comment execution plan
 
-### 必须新增或补充的 manuscript sections
+### 并行计划 A：需要重跑实验或等待实验结果的任务
 
-1. `Conceptual comparison of predictive-domain transform`：
-   - address Reviewer #1.1。
-2. `Intuition of PDTM derivation`：
-   - address Reviewer #1.2。
-3. `Summary of symbols`：
-   - address Reviewer #1.3。
-4. `Hyperparameter selection and sensitivity`：
-   - address Reviewer #1.4 and #3.2。
-5. `Robustness to injected anomalies`：
-   - address Reviewer #3.1。
-6. `Analysis of learned MCD mask`：
-   - address Reviewer #1.5。
-7. `Additional metrics and graph baseline comparison`：
-   - address Reviewer #3.3 and #3.4。
-8. `Theoretical boundary of predictive energy concentration`：
-   - address Reviewer #3.5。
-9. `Code availability / parameter settings`：
-   - address Reviewer #3.6。
+该计划面向实验执行。目标是以最小工作量补足 reviewer 认为缺失的定量证据，不重新设计整篇实验体系。
 
-### 新增实验优先级
+| Priority | Task | Comments addressed | Scope after user review | Minimum deliverable |
+|---|---|---|---|---|
+| P0 | Noise / anomaly robustness | R3.1 | 当前只做 ETTh1 全 horizon；对比 PDT、DLinear、iTransformer。ECL 因耗时和单 `pred_len` 展示问题暂缓。 | Appendix 或主文小表：clean、noise、degradation ratio；response 中说明 visual claim 已有定量支撑。 |
+| P0 | Top-K sensitivity | R1.4, R3.2 | 仅围绕 $K$；不扩展到过大的 grid。优先 ETTh1 + ECL，必要时单 horizon 或 Avg。 | sensitivity curve/table；正文轻度描述 $K$ 选择原则。 |
+| P0 | Mask threshold sensitivity | R1.4, R3.2 | 仅围绕 mask threshold $\tau$；sharpness $k$ 不作为主实验。 | sensitivity curve/table；可同时报告 mask density。 |
+| P1 | GNN baseline appendix | R3.4 | 选择 1-2 个开源、不依赖外部 topology 的 GNN 模型；尽量跑主表数据集。 | Appendix GNN baseline table；正文澄清任务侧重点不同。 |
+| P1 | MCD mask interpretability | R1.5 | 等实验/复现结果出来后选择最有说服力数据集；优先复用 checkpoint 和 saved mask。 | learned mask heatmap + 简短 mask density/alignment 统计。 |
+| P2 | RMSE appendix aggregation | R3.3 | 不重跑训练；从 `metrics.json` 或 MSE 派生 RMSE。 | Appendix RMSE 大表；主表保持不变。 |
 
-| Priority | Task | Comments addressed | Minimum deliverable |
-|---|---|---|---|
-| P0 | Anomaly injection robustness | R3.1 | table with clean/corrupt/degradation ratio |
-| P0 | Hyperparameter sensitivity | R1.4, R3.2 | K and threshold curves/table |
-| P1 | MCD mask visualization | R1.5 | heatmap + mask density/alignment stats |
-| P1 | RMSE/RSE aggregation | R3.3 | supplementary metric table |
-| P1 | GNN baseline comparison | R3.4 | at least one fair graph-learning baseline |
-| P2 | Energy retained-ratio table | R3.5 | cumulative predictive energy ratios |
+#### 实验执行建议
+
+1. Robustness 最小实现：
+   - 不改训练流程，优先做 test-time input corruption evaluation。
+   - 先只跑 ETTh1 全 horizon；如结果不足，再决定是否扩到 ECL/Weather。
+   - 只报告 degradation ratio，不需要把所有噪声强度铺满主文。
+
+2. Sensitivity 最小实现：
+   - $K$ grid 建议从 `{8,16,32,64,96}` 中选 4-5 个。
+   - $\tau$ grid 建议从 `{0.05,0.10,0.15,0.25}` 中选 4 个。
+   - 若计算资源紧张，优先固定 pred_len=96/336 或用一个 representative horizon；
+     response 中说明 Appendix 给出 representative sensitivity。
+
+3. GNN baseline 最小实现：
+   - 候选优先为不要求外部 topology 的 graph-learning model，例如 MTGNN / StemGNN。
+   - 先确认官方代码是否可直接适配 `seq_len=96`、`pred_len={96,192,336,720}`。
+   - 若模型只适配部分数据集或成本过高，Appendix 中说明公平性边界和 topology-free
+     选择理由。
+
+4. MCD mask interpretability：
+   - 先确认当前 `PDT.py` 的 `save_channel_mask` / `save_linear_encoder_A` 是否在
+     test/inference path 中被调用。
+   - 若未调用，只加最小 hook 或单独 analysis script，避免重训。
+
+5. RMSE：
+   - 主表不改。
+   - Appendix 大表可从 MSE 计算 `RMSE = sqrt(MSE)`；如果使用 `metrics.json`，
+     需记录 artifact path 和 metric source。
+
+### 并行计划 B：仅需文字修改、证明、合规准备的任务
+
+该计划面向 manuscript / Appendix / response letter 写作，可与实验并行推进。
+
+| Priority | Task | Comments addressed | Scope after user review | Deliverable |
+|---|---|---|---|---|
+| W0 | FreDF / TransDF 深读与修改意见 | R1.1 | 仔细研读两篇论文，形成 source-faithful conceptual comparison。 | Related Work / Introduction 修改建议；response draft 更新；必要时 comparison table。 |
+| W0 | PDTM 推导直觉 + Appendix 完整证明 | R1.2, R3.5 | 主文加入直觉，Appendix 写完整证明；不在主文塞长证明。 | 主文 concise intuition；Appendix proof；response 中说明两处修改。 |
+| W0 | Symbol table 与 notation cleanup | R1.3 | 按原计划执行。 | Methodology symbol table；局部 notation 统一说明。 |
+| W0 | Top-K theory boundary | R3.5 | 不证明 universal eigenvalue decay；证明 retained predictive energy 的 rank-K 最优性，并承认 data-dependent decay。 | Energy concentration 段落改写；Limitations 补充。 |
+| W1 | RMSE reporting explanation | R3.3 | 主表不变，Appendix 加 RMSE；正文说明 MSE/MAE 是 MTSF 惯例。 | Experimental setup / Appendix intro / response text。 |
+| W1 | GNN scope clarification | R3.4 | 说明 topology-free MTSF 与 explicit topology GNN 的重点不同。 | Related Work paragraph；baseline section clarification；response text。 |
+| W1 | Anonymized code repository implementation plan | R3.6 | 告知具体怎么做 anonymous repo，而不是只承诺提供链接。 | Code availability wording；README checklist；response text。 |
+| W2 | Response letter / list of changes 汇总 | All | 等实验结果回填后完成最终版。 | `Response_to_Reviewers.docx` 和 `List_of_Changes.docx` 更新。 |
+
+#### 文字修改执行建议
+
+1. FreDF / TransDF：
+   - 先读原文 method objective、transform construction、claim scope 和实验设置。
+   - 对比时避免把对方方法简单归类成“decorrelation”后就结束；需要说明它们是否
+     optimize reconstruction、de-correlation、frequency-domain representation 或
+     forecasting target。
+   - 输出一个小型 comparison note，再迁移到 manuscript。
+
+2. Appendix proof：
+   - 主文只保留 reduced-rank regression / CCA intuition。
+   - Appendix 给出从 objective 到 $G^*(B)$、trace maximization、whitened
+     reparameterization、eigen solution、Top-K retained energy 的完整步骤。
+   - R3.5 的 response 要强调：Top-K selection 有 objective-level optimality；
+     eigenvalue decay 是数据分布性质，不做 universal guarantee。
+
+3. Anonymized code repository：
+   - 推荐新建匿名仓库或匿名压缩包，不使用含作者名的 `ChenhYing0v0/pdt` 作为审稿链接。
+   - 仓库内容应包含 PDT implementation、`experiments/stage1/pdt/*.json`、运行说明、
+     MACs/memory profiling 说明、environment 信息、结果复现入口。
+   - 删除或替换作者身份、绝对路径、private remote、邮箱、个人主页、commit metadata
+     中不必要的身份暴露。
+   - manuscript 中 `Code availability` 暂写匿名 reviewer URL；最终接收后再替换为
+     public repository。
+
+4. Appendix 组织：
+   - Appendix A：PDTM full proof。
+   - Appendix B：RMSE full table。
+   - Appendix C：GNN baseline comparison。
+   - Appendix D：robustness / sensitivity / mask interpretability extra details。
 
 ### Response letter 写入顺序
 
-1. Opening paragraph：感谢 reviewer，说明新增实验、理论澄清、可复现材料。
+1. Opening paragraph：感谢 reviewer，说明新增实验、理论澄清、Appendix 和可复现材料。
 2. Reviewer #1 comments 1-5。
 3. Reviewer #3 comments 1-6。
 4. Summary of major changes：
@@ -879,13 +1006,19 @@ results.
 
 ## 需要用户确认的事项
 
-1. Code release route：是否创建 anonymized/private-for-review repository。
-2. GNN baseline scope：是否接受 "graph-learning baselines without predefined topology"
-   作为主要补充；是否额外做 traffic-only topology baseline。
-3. 新实验资源：是否可在 2026-05-21 前完成 robustness、sensitivity 和 GNN baseline。
-4. RMSE/relative metrics：主文增加完整三指标表，还是主文简述 + supplementary table。
-5. 是否允许新增 appendix/supplementary material；如果 KBS submission 不方便新增 appendix，
-   则应把主要新增结果压缩为 2 个主文表/图。
+以下事项在用户 2026-05-08 反馈后已有初步方向，但执行前仍需确认细节：
+
+1. Code release route：方向已确定为 anonymized code repository；仍需确认使用匿名
+   GitHub/GitLab 仓库、匿名压缩包链接，还是 Editorial Manager supplementary upload。
+2. GNN baseline scope：方向已确定为 1-2 个开源且不依赖外部 topology 的模型；仍需在
+   MTGNN / StemGNN 等候选中最终选型，并确认是否跑全主表数据集。
+3. 新实验资源：需确认 2026-05-21 前可投入的 GPU 时间；若资源不足，按
+   ETTh1-first / Appendix-only 的最小方案执行。
+4. Appendix / supplementary：方向已确定主表不变，RMSE 与 GNN baseline 进入 Appendix；
+   仍需确认 KBS revised manuscript 是否允许新增 Appendix，或是否作为 supplementary
+   response material 提交。
+5. Robustness 数据集范围：已按当前资源约束收敛为 ETTh1-only；ECL/Weather 仅作为
+   后续扩展选项。
 
 ## 外部候选参考
 
@@ -899,4 +1032,3 @@ results.
 - AGCRN: `Adaptive Graph Convolutional Recurrent Network for Traffic Forecasting`。
 - HR-DHAN: `Hybrid-Relation Dynamic Hypergraph Attention Network for Traffic
   Flow Prediction`，当前 `ref.bib` 已有条目。
-

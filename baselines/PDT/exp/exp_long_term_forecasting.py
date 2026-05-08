@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import time
 import warnings
 
@@ -307,6 +308,8 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         best_model_path = os.path.join(path, 'checkpoint.pth')
         self.model.load_state_dict(torch.load(best_model_path))
+        if getattr(self.args, 'output_dir', ''):
+            shutil.copy2(best_model_path, os.path.join(self.args.output_dir, 'best.ckpt'))
 
         print("Training finished")
         self._export_linear_encoder_A(res_path)

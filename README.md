@@ -4,13 +4,24 @@ This repository contains the PDT time-series forecasting implementation and the 
 
 ## Repository Layout
 
-- `baselines/PDT/`: PDT baseline code adapted from upstream LinearEnc.
+- `baselines/PDT/`: canonical PDT runtime, reconstructed from the verified old-clone path.
 - `protocol/`: thin manifest runner, manifest schema, metric utilities, and artifact recording.
 - `experiments/stage1/pdt/`: PDT stage-1 manifests, including smoke and multi-horizon runs.
 - `scripts/remote/`: remote launch and result synchronization helpers.
 - `manuscript/`: paper and revision materials.
 
 ## PDT Manifest Dry-Run
+
+All PDT experiments must use the fixed manifest route:
+
+```text
+scripts/remote/run_manifest.sh
+  -> python -m protocol.runners.run_manifest
+  -> protocol/runners/pdt.py
+  -> baselines/PDT/run.py
+```
+
+`baselines/PDT_old/` is a provenance snapshot only. Do not use it as the runtime entry for new PDT experiments.
 
 Run manifest validation from the repository root:
 
@@ -29,4 +40,3 @@ scripts/remote/run_manifest.sh experiments/stage1/pdt/etth1_smoke.json --gpu 0 -
 ```
 
 The remote wrapper writes results to `~/exp_outputs/r-2026-pdt` by default. Override with `OUTPUT_ROOT` when needed.
-

@@ -4,7 +4,7 @@ import shutil
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
-from models import PDT, R2Linear
+from models import DLinear, PDT, R2Linear
 from utils.tools import ensure_path
 
 
@@ -12,6 +12,7 @@ class Exp_Basic(object):
     def __init__(self, args):
         self.args = args
         self.model_dict = {
+            "DLinear": DLinear,
             "PDT": PDT,
             "R2Linear": R2Linear,
         }
