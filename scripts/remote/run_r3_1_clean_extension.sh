@@ -72,11 +72,7 @@ run_manifest() {
 run_dataset() {
   local dataset="$1"
   local base="experiments/revision/r3_1_noise_robustness/clean_checkpoints_extension"
-  if [[ "$dataset" == "weather" ]]; then
-    run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023" 0
-  else
-    run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023"
-  fi
+  run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023"
   run_manifest "$base/itransformer_${dataset}_clean.json" "r3_1_clean_itransformer_${dataset}_s2023"
   run_manifest "$base/dlinear_${dataset}_clean.json" "r3_1_clean_dlinear_${dataset}_s2023"
 }
