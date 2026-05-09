@@ -177,13 +177,31 @@ def _postprocess_legacy_pdt_old(manifest, run_dir: Path, cwd: Path) -> None:
 
     args = manifest.args
     setting = _setting_from_args(args)
-    checkpoint = _resolve_legacy_output_path(cwd, str(args["checkpoints"])) / setting / "checkpoint.pth"
-    metrics_npy = _resolve_legacy_output_path(cwd, str(args["results"])) / setting / "metrics.npy"
+    checkpoint_root = str(args.get("checkpoints", run_dir / "checkpoints"))
+    results_root = str(args.get("results", run_dir / "results"))
+    checkpoint = _resolve_legacy_output_path(cwd, checkpoint_root) / setting / "checkpoint.pth"
+    metrics_npy = _resolve_legacy_output_path(cwd, results_root) / setting / "metrics.npy"
 
     if not checkpoint.exists():
-        raise FileNotFoundError(f"Legacy PDT checkpoint not found after training: {checkpoint}")
+        matches = sorted(checkpoint.parent.parent.glob("*/checkpoint.pth")) if checkpoint.parent.parent.exists() else []
+        if len(matches) == 1:
+            checkpoint = matches[0]
+        else:
+            candidates = "\n".join(str(path) for path in matches[:20])
+            raise FileNotFoundError(
+                f"Legacy PDT checkpoint not found after training: {checkpoint}"
+                + (f"\nCandidate checkpoints:\n{candidates}" if candidates else "")
+            )
     if not metrics_npy.exists():
-        raise FileNotFoundError(f"Legacy PDT metrics.npy not found after training: {metrics_npy}")
+        matches = sorted(metrics_npy.parent.parent.glob("*/metrics.npy")) if metrics_npy.parent.parent.exists() else []
+        if len(matches) == 1:
+            metrics_npy = matches[0]
+        else:
+            candidates = "\n".join(str(path) for path in matches[:20])
+            raise FileNotFoundError(
+                f"Legacy PDT metrics.npy not found after training: {metrics_npy}"
+                + (f"\nCandidate metrics:\n{candidates}" if candidates else "")
+            )
 
     shutil.copy2(checkpoint, run_dir / "best.ckpt")
     shutil.copy2(metrics_npy, run_dir / "metrics.npy")

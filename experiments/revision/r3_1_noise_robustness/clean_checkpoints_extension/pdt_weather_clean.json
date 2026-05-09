@@ -112,11 +112,7 @@
       0.05
     ],
     "des": "Exp_0.1a_Rk_Dnorm_k-EU-mask",
-    "fix_seed": 2023,
-    "checkpoints": "./exp_results/R2Linear/R2Linear_weather/checkpoints/",
-    "results": "./exp_results/R2Linear/R2Linear_weather/results/",
-    "test_results": "./exp_results/R2Linear/R2Linear_weather/test_results/",
-    "log_path": "./exp_results/R2Linear/R2Linear_weather/result_long_term_forecast.txt"
+    "fix_seed": 2023
   },
   "env": {
     "DATA_ROOT": "${DATA_ROOT}",

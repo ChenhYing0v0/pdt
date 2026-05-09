@@ -26,6 +26,10 @@ def build_command(repo_root: Path, manifest: Manifest, run_dir: Path):
         if protocol_only_args:
             names = ", ".join(sorted(protocol_only_args))
             raise ValueError(f"Legacy PDT_old route cannot pass protocol-only args to run_IN.py: {names}")
+        args["checkpoints"] = str(run_dir / "checkpoints")
+        args["results"] = str(run_dir / "results")
+        args["test_results"] = str(run_dir / "test_results")
+        args["log_path"] = str(run_dir / "result_long_term_forecast.txt")
         command = ["python", "-u", "run_IN.py", *build_cli_args(args)]
         env = dict(manifest.env)
         cwd = repo_root / LEGACY_PDT_OLD_ENTRY.parent
