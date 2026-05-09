@@ -5,9 +5,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-pdt}"
 GPU_ID="${GPU:-0}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-$HOME/exp_outputs/r-2026-pdt}"
-OLD_DATA_ROOT="${OLD_DATA_ROOT:-$ROOT/old}"
 PDT_OLD_ROOT="${PDT_OLD_ROOT:-$ROOT/baselines/PDT_old}"
-OLD_RUN_IN="${OLD_RUN_IN:-$ROOT/old/run_IN.py}"
+OLD_DATA_ROOT="${OLD_DATA_ROOT:-$ROOT/baselines/PDT/dataset}"
+OLD_RUN_IN="${OLD_RUN_IN:-$PDT_OLD_ROOT/run_IN.py}"
 RUN_ID_PREFIX="${RUN_ID_PREFIX:-r3_1_old_r2linear_weather_s2023}"
 PRED_LENS="96,192,336,720"
 DRY_RUN=0
@@ -18,16 +18,16 @@ usage() {
 usage: run_r3_1_old_r2linear_weather.sh [--gpu ID] [--pred-lens 96,192,336,720] [--dry-run] [--only-missing]
 
 Runs the old Weather R2Linear configuration in the same remote environment for
-R3.1 debugging. The parameter schedule matches old/R2Linear_weather.sh, while
-old/run_IN.py imports the actual model stack from baselines/PDT_old via
-PYTHONPATH. Data and matrices are read from old/ by default.
+R3.1 debugging. The parameter schedule matches old/R2Linear_weather.sh. The
+process runs from baselines/PDT_old and calls baselines/PDT_old/run_IN.py to
+match the manually verified old-version execution context.
 
 Environment:
   CONDA_ENV_NAME  conda env name, default: pdt
   OUTPUT_ROOT     run output root, default: $HOME/exp_outputs/r-2026-pdt
-  OLD_DATA_ROOT   Weather csv and mats root, default: <repo>/old
-  PDT_OLD_ROOT    import root for model/exp/data_provider/utils, default: <repo>/baselines/PDT_old
-  OLD_RUN_IN      launcher script, default: <repo>/old/run_IN.py
+  OLD_DATA_ROOT   Weather csv and mats root, default: <repo>/baselines/PDT/dataset
+  PDT_OLD_ROOT    old baseline root, default: <repo>/baselines/PDT_old
+  OLD_RUN_IN      launcher script, default: <repo>/baselines/PDT_old/run_IN.py
   RUN_ID_PREFIX   output run id prefix, default: r3_1_old_r2linear_weather_s2023
 EOF
 }
@@ -194,12 +194,12 @@ run_one() {
   echo "== Running $run_id =="
   if [[ "$DRY_RUN" -eq 1 ]]; then
     printf 'run_id=%s\n' "$run_id"
-    printf 'cwd=%s\n' "$ROOT"
+    printf 'cwd=%s\n' "$PDT_OLD_ROOT"
     printf 'OLD_RUN_IN=%s\n' "$OLD_RUN_IN"
     printf 'PDT_OLD_ROOT=%s\n' "$PDT_OLD_ROOT"
     printf 'OLD_DATA_ROOT=%s\n' "$OLD_DATA_ROOT"
     printf 'CUDA_VISIBLE_DEVICES=%s\n' "$GPU_ID"
-    printf 'PYTHONPATH=%s\n' "$PDT_OLD_ROOT:${PYTHONPATH:-}"
+    printf 'PYTHONPATH=%s\n' "$PDT_OLD_ROOT${PYTHONPATH:+:$PYTHONPATH}"
     printf 'command='
     printf '%q ' "${cmd[@]}"
     printf '\n'
@@ -214,21 +214,21 @@ run_one() {
 
   {
     printf 'run_id=%s\n' "$run_id"
-    printf 'cwd=%s\n' "$ROOT"
+    printf 'cwd=%s\n' "$PDT_OLD_ROOT"
     printf 'OLD_RUN_IN=%s\n' "$OLD_RUN_IN"
     printf 'PDT_OLD_ROOT=%s\n' "$PDT_OLD_ROOT"
     printf 'OLD_DATA_ROOT=%s\n' "$OLD_DATA_ROOT"
     printf 'CUDA_VISIBLE_DEVICES=%s\n' "$GPU_ID"
-    printf 'PYTHONPATH=%s\n' "$PDT_OLD_ROOT:${PYTHONPATH:-}"
+    printf 'PYTHONPATH=%s\n' "$PDT_OLD_ROOT${PYTHONPATH:+:$PYTHONPATH}"
     printf 'command='
     printf '%q ' "${cmd[@]}"
     printf '\n'
   } > "$run_dir/command.txt"
 
   (
-    cd "$ROOT"
+    cd "$PDT_OLD_ROOT"
     export CUDA_VISIBLE_DEVICES="$GPU_ID"
-    export PYTHONPATH="$PDT_OLD_ROOT:${PYTHONPATH:-}"
+    export PYTHONPATH="$PDT_OLD_ROOT${PYTHONPATH:+:$PYTHONPATH}"
     "${cmd[@]}"
   ) 2>&1 | sed -r "s/\\x1B\\[[0-9;]*[mGKHF]//g" | tee "$train_log"
 }
