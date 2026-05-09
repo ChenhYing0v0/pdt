@@ -169,6 +169,17 @@ def _resolve_legacy_output_path(cwd: Path, raw_path: str) -> Path:
     return path if path.is_absolute() else cwd / path
 
 
+def _legacy_artifact_path(root: Path, setting: str, filename: str) -> Path:
+    exact = root / setting / filename
+    if exact.exists():
+        return exact
+    if setting.endswith("_0"):
+        without_itr = root / setting[:-2] / filename
+        if without_itr.exists():
+            return without_itr
+    return exact
+
+
 def _postprocess_legacy_pdt_old(manifest, run_dir: Path, cwd: Path) -> None:
     if manifest.repo_relative_entry.as_posix() != "baselines/PDT_old/run_IN.py":
         return
@@ -179,8 +190,10 @@ def _postprocess_legacy_pdt_old(manifest, run_dir: Path, cwd: Path) -> None:
     setting = _setting_from_args(args)
     checkpoint_root = str(args.get("checkpoints", run_dir / "checkpoints"))
     results_root = str(args.get("results", run_dir / "results"))
-    checkpoint = _resolve_legacy_output_path(cwd, checkpoint_root) / setting / "checkpoint.pth"
-    metrics_npy = _resolve_legacy_output_path(cwd, results_root) / setting / "metrics.npy"
+    checkpoint_base = _resolve_legacy_output_path(cwd, checkpoint_root)
+    results_base = _resolve_legacy_output_path(cwd, results_root)
+    checkpoint = _legacy_artifact_path(checkpoint_base, setting, "checkpoint.pth")
+    metrics_npy = _legacy_artifact_path(results_base, setting, "metrics.npy")
 
     if not checkpoint.exists():
         matches = sorted(checkpoint.parent.parent.glob("*/checkpoint.pth")) if checkpoint.parent.parent.exists() else []
