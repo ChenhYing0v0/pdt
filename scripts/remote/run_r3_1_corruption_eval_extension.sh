@@ -12,13 +12,13 @@ EXTRA_ARGS=()
 
 usage() {
   cat >&2 <<'EOF'
-usage: run_r3_1_corruption_eval_extension.sh [--gpu ID] [--dataset weather|ettm2|all] [--run-glob GLOB] [--dry-run] [--collect-only] [--only-missing]
+usage: run_r3_1_corruption_eval_extension.sh [--gpu ID] [--dataset weather|ettm2|ecl|all] [--run-glob GLOB] [--dry-run] [--collect-only] [--only-missing]
 
 Runs Reviewer #3.1 spike/segment corruption evaluation for the Weather/ETTm2
-extension from the clean checkpoint index. Execute this on the remote machine
-after clean checkpoints are trained and indexed. Activate the intended Python
-environment before running this script. Set CORRUPTION_OUTPUT_ROOT to override
-where corruption-evaluation artifacts are written.
+and ECL extension from the clean checkpoint index. Execute this on the remote
+machine after clean checkpoints are trained and indexed. Activate the intended
+Python environment before running this script. Set CORRUPTION_OUTPUT_ROOT to
+override where corruption-evaluation artifacts are written.
 EOF
 }
 
@@ -34,7 +34,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --dataset)
       if [[ -z "${2:-}" ]]; then
-        echo "--dataset requires weather, ettm2, or all." >&2
+        echo "--dataset requires weather, ettm2, ecl, or all." >&2
         exit 1
       fi
       DATASET="$2"
@@ -72,12 +72,16 @@ case "$DATASET" in
     DATASETS="ETTm2"
     RUN_GLOB="${RUN_GLOB:-r3_1_clean_*_ettm2_s2023_pl*}"
     ;;
+  ecl)
+    DATASETS="ECL"
+    RUN_GLOB="${RUN_GLOB:-r3_1_clean_*_ecl_s2023_pl*}"
+    ;;
   all)
-    DATASETS="Weather,ETTm2"
+    DATASETS="Weather,ETTm2,ECL"
     RUN_GLOB="${RUN_GLOB:-r3_1_clean_*_s2023_pl*}"
     ;;
   *)
-    echo "--dataset must be weather, ettm2, or all; got: $DATASET" >&2
+    echo "--dataset must be weather, ettm2, ecl, or all; got: $DATASET" >&2
     exit 1
     ;;
 esac

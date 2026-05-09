@@ -1,0 +1,68 @@
+{
+  "baseline": "itransformer",
+  "stage": "revision_r3_1_clean_checkpoint_extension",
+  "dataset": "ECL",
+  "seq_len": 96,
+  "pred_len": [
+    96,
+    192,
+    336,
+    720
+  ],
+  "seed": 2023,
+  "search_budget": {
+    "trials": 1,
+    "policy": "fixed_reproduction"
+  },
+  "entry": "baselines/PDT/run.py",
+  "args": {
+    "data": "custom",
+    "root_path": "${DATA_ROOT}/electricity/",
+    "data_path": "electricity.csv",
+    "features": "M",
+    "target": "OT",
+    "freq": "h",
+    "seq_len": 96,
+    "label_len": 48,
+    "enc_in": 321,
+    "dec_in": 321,
+    "c_out": 321,
+    "d_model": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "d_ff": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "e_layers": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "batch_size": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "learning_rate": 0.0001,
+    "train_epochs": 10,
+    "patience": 3,
+    "itr": 1,
+    "model": "iTransformer",
+    "des": "R3_1CleanExt",
+    "loss_mode": "L2"
+  },
+  "env": {
+    "DATA_ROOT": "${DATA_ROOT}",
+    "CUDA_VISIBLE_DEVICES": "0"
+  },
+  "metric_policy": "forecasting_v1",
+  "selection_policy": "best_val_mse"
+}

@@ -8,9 +8,9 @@ DATASET="all"
 
 usage() {
   cat >&2 <<'EOF'
-usage: sync_r3_1_clean_extension.sh [--dataset weather|ettm2|all]
+usage: sync_r3_1_clean_extension.sh [--dataset weather|ettm2|ecl|all]
 
-Syncs Weather/ETTm2 clean-checkpoint runs from REMOTE_RESULTS_ROOT, archives
+Syncs Weather/ETTm2/ECL clean-checkpoint runs from REMOTE_RESULTS_ROOT, archives
 best.ckpt plus lightweight metadata, and rebuilds the clean checkpoint index.
 Set REMOTE_HOST and optionally REMOTE_RESULTS_ROOT before running locally.
 EOF
@@ -20,7 +20,7 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --dataset)
       if [[ -z "${2:-}" ]]; then
-        echo "--dataset requires weather, ettm2, or all." >&2
+        echo "--dataset requires weather, ettm2, ecl, or all." >&2
         exit 1
       fi
       DATASET="$2"
@@ -57,12 +57,16 @@ case "$DATASET" in
   ettm2)
     append_dataset_runs "ettm2"
     ;;
+  ecl)
+    append_dataset_runs "ecl"
+    ;;
   all)
     append_dataset_runs "weather"
     append_dataset_runs "ettm2"
+    append_dataset_runs "ecl"
     ;;
   *)
-    echo "--dataset must be weather, ettm2, or all; got: $DATASET" >&2
+    echo "--dataset must be weather, ettm2, ecl, or all; got: $DATASET" >&2
     exit 1
     ;;
 esac

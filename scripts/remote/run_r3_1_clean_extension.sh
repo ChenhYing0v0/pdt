@@ -9,12 +9,13 @@ DRY_RUN=0
 
 usage() {
   cat >&2 <<'EOF'
-usage: run_r3_1_clean_extension.sh [--gpu ID] [--dataset weather|ettm2|all] [--model pdt|itransformer|dlinear|all] [--dry-run]
+usage: run_r3_1_clean_extension.sh [--gpu ID] [--dataset weather|ettm2|ecl|all] [--model pdt|itransformer|dlinear|all] [--dry-run]
 
 Runs clean-checkpoint training for the Reviewer #3.1 robustness extension on
-Weather and ETTm2. Each manifest expands to pred_len 96/192/336/720. Execute
-this on the remote training machine from the repository checkout. Activate the
-intended environment first, and set DATA_ROOT and OUTPUT_ROOT as needed.
+Weather, ETTm2, and ECL. Each manifest expands to pred_len 96/192/336/720.
+Execute this on the remote training machine from the repository checkout.
+Activate the intended environment first, and set DATA_ROOT and OUTPUT_ROOT as
+needed.
 EOF
 }
 
@@ -30,7 +31,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --dataset)
       if [[ -z "${2:-}" ]]; then
-        echo "--dataset requires weather, ettm2, or all." >&2
+        echo "--dataset requires weather, ettm2, ecl, or all." >&2
         exit 1
       fi
       DATASET="$2"
@@ -110,12 +111,16 @@ case "$DATASET" in
   ettm2)
     run_dataset "ettm2"
     ;;
+  ecl)
+    run_dataset "ecl"
+    ;;
   all)
     run_dataset "weather"
     run_dataset "ettm2"
+    run_dataset "ecl"
     ;;
   *)
-    echo "--dataset must be weather, ettm2, or all; got: $DATASET" >&2
+    echo "--dataset must be weather, ettm2, ecl, or all; got: $DATASET" >&2
     exit 1
     ;;
 esac

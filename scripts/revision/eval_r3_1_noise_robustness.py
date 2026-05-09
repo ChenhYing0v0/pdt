@@ -118,6 +118,8 @@ def _resolve_root_path(args: dict[str, Any], dataset: str, data_root: str | None
         args["root_path"] = str(Path(data_root).expanduser() / "ETT-small")
     elif dataset_key == "weather" or data_path == "weather.csv":
         args["root_path"] = str(Path(data_root).expanduser() / "weather")
+    elif dataset_key in {"ecl", "electricity"} or data_path == "electricity.csv":
+        args["root_path"] = str(Path(data_root).expanduser() / "electricity")
 
 
 def _eval_run_id(clean_run_id: str, corruption_type: str) -> str:
