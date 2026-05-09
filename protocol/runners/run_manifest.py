@@ -5,6 +5,7 @@ import copy
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 from typing import Any
@@ -137,6 +138,69 @@ def _stream_process(command: list[str], cwd: Path, env: dict[str, str], log_path
         return process.wait()
 
 
+def _setting_from_args(args: dict[str, Any], itr_index: int = 0) -> str:
+    return "{}_{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_rr{}_frR{}_k{}_{}_{}".format(
+        args.get("task_name", "long_term_forecast"),
+        args["model_id"],
+        args["model"],
+        args["data"],
+        args["features"],
+        args["seq_len"],
+        args["label_len"],
+        args["pred_len"],
+        args["d_model"],
+        args.get("n_heads", 8),
+        args["e_layers"],
+        args["d_layers"],
+        args["d_ff"],
+        args["factor"],
+        args.get("embed", "timeF"),
+        args.get("distil", True),
+        args["r_rank"],
+        args["freeze_R"],
+        args["k_top"],
+        args["des"],
+        itr_index,
+    )
+
+
+def _resolve_legacy_output_path(cwd: Path, raw_path: str) -> Path:
+    path = Path(raw_path)
+    return path if path.is_absolute() else cwd / path
+
+
+def _postprocess_legacy_pdt_old(manifest, run_dir: Path, cwd: Path) -> None:
+    if manifest.repo_relative_entry.as_posix() != "baselines/PDT_old/run_IN.py":
+        return
+
+    import numpy as np
+
+    args = manifest.args
+    setting = _setting_from_args(args)
+    checkpoint = _resolve_legacy_output_path(cwd, str(args["checkpoints"])) / setting / "checkpoint.pth"
+    metrics_npy = _resolve_legacy_output_path(cwd, str(args["results"])) / setting / "metrics.npy"
+
+    if not checkpoint.exists():
+        raise FileNotFoundError(f"Legacy PDT checkpoint not found after training: {checkpoint}")
+    if not metrics_npy.exists():
+        raise FileNotFoundError(f"Legacy PDT metrics.npy not found after training: {metrics_npy}")
+
+    shutil.copy2(checkpoint, run_dir / "best.ckpt")
+    shutil.copy2(metrics_npy, run_dir / "metrics.npy")
+
+    values = np.load(metrics_npy).astype(float).tolist()
+    if len(values) < 5:
+        raise ValueError(f"Legacy PDT metrics.npy should contain at least 5 values: {metrics_npy}")
+    metrics = {
+        "mae": values[0],
+        "mse": values[1],
+        "rmse": values[2],
+        "mape": values[3],
+        "mspe": values[4],
+    }
+    write_json(run_dir / "metrics.json", metrics)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run a baseline experiment from a protocol manifest.")
     parser.add_argument("--manifest", required=True, help="Path to the JSON manifest.")
@@ -173,7 +237,14 @@ def main() -> int:
             child_manifest.pred_len,
         )
         run_dir = ensure_dir(output_root / run_id)
-        command, runner_env = builder(repo_root, child_manifest, run_dir)
+        build_result = builder(repo_root, child_manifest, run_dir)
+        if len(build_result) == 2:
+            command, runner_env = build_result
+            run_cwd = repo_root
+        elif len(build_result) == 3:
+            command, runner_env, run_cwd = build_result
+        else:
+            raise ValueError(f"Invalid builder result for baseline {child_manifest.baseline}: {build_result!r}")
         write_run_snapshot(
             run_dir,
             child_manifest,
@@ -187,13 +258,16 @@ def main() -> int:
         if cli_args.dry_run:
             print("Resolved run directory:")
             print(run_dir)
+            print("Resolved working directory:")
+            print(run_cwd)
             print("Resolved command:")
             print(" ".join(command))
             continue
 
-        return_code = _stream_process(command, repo_root, runner_env, run_dir / "train.log")
+        return_code = _stream_process(command, run_cwd, runner_env, run_dir / "train.log")
         if return_code != 0:
             return return_code
+        _postprocess_legacy_pdt_old(child_manifest, run_dir, run_cwd)
 
         print(f"Run finished successfully: {run_dir}")
     return 0

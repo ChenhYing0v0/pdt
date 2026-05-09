@@ -3,14 +3,12 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 OUTPUT_ROOT="${OUTPUT_ROOT:-$HOME/exp_outputs/r-2026-pdt}"
-CONDA_ENV_NAME="${CONDA_ENV_NAME:-pdt}"
 
 usage() {
   cat >&2 <<EOF
 usage: run_manifest.sh <manifest> [run_id] [--gpu ID] [--dry-run] [--skip-predictions]
 
 Environment:
-  CONDA_ENV_NAME   conda env name, default: ${CONDA_ENV_NAME}
   OUTPUT_ROOT      output root, default: ${OUTPUT_ROOT}
   GPU              default GPU id if --gpu is omitted; if unset, keep manifest env
 EOF
@@ -70,15 +68,11 @@ if [[ -z "$MANIFEST" ]]; then
   exit 1
 fi
 
-if command -v conda >/dev/null 2>&1; then
-  PYTHON_CMD=(conda run --no-capture-output -n "$CONDA_ENV_NAME" python -u)
-elif [[ "$DRY_RUN" -eq 1 ]] && command -v python3 >/dev/null 2>&1; then
-  echo "conda command not found; using python3 for dry-run only." >&2
-  PYTHON_CMD=(python3 -u)
-else
-  echo "conda command not found; cannot guarantee env '${CONDA_ENV_NAME}'." >&2
+if ! command -v python >/dev/null 2>&1; then
+  echo "python command not found; activate the intended environment before running this script." >&2
   exit 1
 fi
+PYTHON_CMD=(python -u)
 
 cd "$ROOT"
 CMD=("${PYTHON_CMD[@]}" -m protocol.runners.run_manifest --manifest "$MANIFEST" --output-root "$OUTPUT_ROOT")

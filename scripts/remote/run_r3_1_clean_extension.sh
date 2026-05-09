@@ -12,8 +12,8 @@ usage: run_r3_1_clean_extension.sh [--gpu ID] [--dataset weather|ettm2|all] [--d
 
 Runs clean-checkpoint training for the Reviewer #3.1 robustness extension on
 Weather and ETTm2. Each manifest expands to pred_len 96/192/336/720. Execute
-this on the remote training machine from the repository checkout. Set DATA_ROOT,
-CONDA_ENV_NAME, and OUTPUT_ROOT as needed.
+this on the remote training machine from the repository checkout. Activate the
+intended environment first, and set DATA_ROOT and OUTPUT_ROOT as needed.
 EOF
 }
 
@@ -54,7 +54,11 @@ done
 run_manifest() {
   local manifest="$1"
   local run_id="$2"
-  local cmd=(bash "$ROOT/scripts/remote/run_manifest.sh" "$manifest" "$run_id" --skip-predictions)
+  local skip_predictions="${3:-1}"
+  local cmd=(bash "$ROOT/scripts/remote/run_manifest.sh" "$manifest" "$run_id")
+  if [[ "$skip_predictions" -eq 1 ]]; then
+    cmd+=(--skip-predictions)
+  fi
   if [[ -n "$GPU_ID" ]]; then
     cmd+=(--gpu "$GPU_ID")
   fi
@@ -68,7 +72,11 @@ run_manifest() {
 run_dataset() {
   local dataset="$1"
   local base="experiments/revision/r3_1_noise_robustness/clean_checkpoints_extension"
-  run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023"
+  if [[ "$dataset" == "weather" ]]; then
+    run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023" 0
+  else
+    run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023"
+  fi
   run_manifest "$base/itransformer_${dataset}_clean.json" "r3_1_clean_itransformer_${dataset}_s2023"
   run_manifest "$base/dlinear_${dataset}_clean.json" "r3_1_clean_dlinear_${dataset}_s2023"
 }
