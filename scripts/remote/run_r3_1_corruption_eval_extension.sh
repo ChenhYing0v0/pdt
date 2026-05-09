@@ -6,7 +6,7 @@ GPU_ID="${GPU:-}"
 DATASET="all"
 CLEAN_INDEX="${CLEAN_INDEX:-artifacts/revision/r3_1_noise_robustness_extension/clean_checkpoints/index.tsv}"
 CLEAN_RUNS_ROOT="${CLEAN_RUNS_ROOT:-$HOME/exp_outputs/r-2026-pdt}"
-OUTPUT_ROOT="${OUTPUT_ROOT:-artifacts/revision/r3_1_noise_robustness_extension}"
+CORRUPTION_OUTPUT_ROOT="${CORRUPTION_OUTPUT_ROOT:-artifacts/revision/r3_1_noise_robustness_extension}"
 EXTRA_ARGS=()
 
 usage() {
@@ -16,7 +16,8 @@ usage: run_r3_1_corruption_eval_extension.sh [--gpu ID] [--dataset weather|ettm2
 Runs Reviewer #3.1 spike/segment corruption evaluation for the Weather/ETTm2
 extension from the clean checkpoint index. Execute this on the remote machine
 after clean checkpoints are trained and indexed. Activate the intended Python
-environment before running this script.
+environment before running this script. Set CORRUPTION_OUTPUT_ROOT to override
+where corruption-evaluation artifacts are written.
 EOF
 }
 
@@ -73,7 +74,7 @@ CMD=(
   python -u "$ROOT/scripts/revision/eval_r3_1_noise_robustness.py"
   --clean-index "$CLEAN_INDEX"
   --clean-runs-root "$CLEAN_RUNS_ROOT"
-  --output-root "$OUTPUT_ROOT"
+  --output-root "$CORRUPTION_OUTPUT_ROOT"
   --datasets "$DATASETS"
   "${EXTRA_ARGS[@]}"
 )
