@@ -2,7 +2,6 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-CONDA_ENV_NAME="${CONDA_ENV_NAME:-pdt}"
 GPU_ID="${GPU:-}"
 DATASET="all"
 CLEAN_INDEX="${CLEAN_INDEX:-artifacts/revision/r3_1_noise_robustness_extension/clean_checkpoints/index.tsv}"
@@ -16,7 +15,8 @@ usage: run_r3_1_corruption_eval_extension.sh [--gpu ID] [--dataset weather|ettm2
 
 Runs Reviewer #3.1 spike/segment corruption evaluation for the Weather/ETTm2
 extension from the clean checkpoint index. Execute this on the remote machine
-after clean checkpoints are trained and indexed.
+after clean checkpoints are trained and indexed. Activate the intended Python
+environment before running this script.
 EOF
 }
 
@@ -82,8 +82,4 @@ if [[ -n "$GPU_ID" ]]; then
 fi
 
 cd "$ROOT"
-if command -v conda >/dev/null 2>&1; then
-  conda run --no-capture-output -n "$CONDA_ENV_NAME" "${CMD[@]}"
-else
-  "${CMD[@]}"
-fi
+"${CMD[@]}"
