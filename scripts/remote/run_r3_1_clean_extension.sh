@@ -4,11 +4,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 GPU_ID="${GPU:-}"
 DATASET="all"
+CLEAN_MODEL="all"
 DRY_RUN=0
 
 usage() {
   cat >&2 <<'EOF'
-usage: run_r3_1_clean_extension.sh [--gpu ID] [--dataset weather|ettm2|all] [--dry-run]
+usage: run_r3_1_clean_extension.sh [--gpu ID] [--dataset weather|ettm2|all] [--model pdt|itransformer|dlinear|all] [--dry-run]
 
 Runs clean-checkpoint training for the Reviewer #3.1 robustness extension on
 Weather and ETTm2. Each manifest expands to pred_len 96/192/336/720. Execute
@@ -33,6 +34,14 @@ while [[ $# -gt 0 ]]; do
         exit 1
       fi
       DATASET="$2"
+      shift 2
+      ;;
+    --model)
+      if [[ -z "${2:-}" ]]; then
+        echo "--model requires pdt, itransformer, dlinear, or all." >&2
+        exit 1
+      fi
+      CLEAN_MODEL="$2"
       shift 2
       ;;
     --dry-run)
@@ -72,9 +81,26 @@ run_manifest() {
 run_dataset() {
   local dataset="$1"
   local base="experiments/revision/r3_1_noise_robustness/clean_checkpoints_extension"
-  run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023"
-  run_manifest "$base/itransformer_${dataset}_clean.json" "r3_1_clean_itransformer_${dataset}_s2023"
-  run_manifest "$base/dlinear_${dataset}_clean.json" "r3_1_clean_dlinear_${dataset}_s2023"
+  case "$CLEAN_MODEL" in
+    pdt)
+      run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023"
+      ;;
+    itransformer)
+      run_manifest "$base/itransformer_${dataset}_clean.json" "r3_1_clean_itransformer_${dataset}_s2023"
+      ;;
+    dlinear)
+      run_manifest "$base/dlinear_${dataset}_clean.json" "r3_1_clean_dlinear_${dataset}_s2023"
+      ;;
+    all)
+      run_manifest "$base/pdt_${dataset}_clean.json" "r3_1_clean_pdt_${dataset}_s2023"
+      run_manifest "$base/itransformer_${dataset}_clean.json" "r3_1_clean_itransformer_${dataset}_s2023"
+      run_manifest "$base/dlinear_${dataset}_clean.json" "r3_1_clean_dlinear_${dataset}_s2023"
+      ;;
+    *)
+      echo "--model must be pdt, itransformer, dlinear, or all; got: $CLEAN_MODEL" >&2
+      exit 1
+      ;;
+  esac
 }
 
 case "$DATASET" in

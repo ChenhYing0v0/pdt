@@ -7,11 +7,12 @@ DATASET="all"
 CLEAN_INDEX="${CLEAN_INDEX:-artifacts/revision/r3_1_noise_robustness_extension/clean_checkpoints/index.tsv}"
 CLEAN_RUNS_ROOT="${CLEAN_RUNS_ROOT:-$HOME/exp_outputs/r-2026-pdt}"
 CORRUPTION_OUTPUT_ROOT="${CORRUPTION_OUTPUT_ROOT:-artifacts/revision/r3_1_noise_robustness_extension}"
+RUN_GLOB="${RUN_GLOB:-}"
 EXTRA_ARGS=()
 
 usage() {
   cat >&2 <<'EOF'
-usage: run_r3_1_corruption_eval_extension.sh [--gpu ID] [--dataset weather|ettm2|all] [--dry-run] [--collect-only] [--only-missing]
+usage: run_r3_1_corruption_eval_extension.sh [--gpu ID] [--dataset weather|ettm2|all] [--run-glob GLOB] [--dry-run] [--collect-only] [--only-missing]
 
 Runs Reviewer #3.1 spike/segment corruption evaluation for the Weather/ETTm2
 extension from the clean checkpoint index. Execute this on the remote machine
@@ -39,6 +40,14 @@ while [[ $# -gt 0 ]]; do
       DATASET="$2"
       shift 2
       ;;
+    --run-glob)
+      if [[ -z "${2:-}" ]]; then
+        echo "--run-glob requires a glob pattern." >&2
+        exit 1
+      fi
+      RUN_GLOB="$2"
+      shift 2
+      ;;
     --dry-run|--collect-only|--only-missing)
       EXTRA_ARGS+=("$1")
       shift
@@ -57,12 +66,15 @@ done
 case "$DATASET" in
   weather)
     DATASETS="Weather"
+    RUN_GLOB="${RUN_GLOB:-r3_1_clean_*_weather_s2023_pl*}"
     ;;
   ettm2)
     DATASETS="ETTm2"
+    RUN_GLOB="${RUN_GLOB:-r3_1_clean_*_ettm2_s2023_pl*}"
     ;;
   all)
     DATASETS="Weather,ETTm2"
+    RUN_GLOB="${RUN_GLOB:-r3_1_clean_*_s2023_pl*}"
     ;;
   *)
     echo "--dataset must be weather, ettm2, or all; got: $DATASET" >&2
@@ -74,6 +86,7 @@ CMD=(
   python -u "$ROOT/scripts/revision/eval_r3_1_noise_robustness.py"
   --clean-index "$CLEAN_INDEX"
   --clean-runs-root "$CLEAN_RUNS_ROOT"
+  --run-glob "$RUN_GLOB"
   --output-root "$CORRUPTION_OUTPUT_ROOT"
   --datasets "$DATASETS"
   "${EXTRA_ARGS[@]}"
