@@ -18,6 +18,14 @@ export DATA_ROOT=/path/to/datasets
 scripts/remote/run_r3_2_hyperparam_sensitivity.sh --gpu 0 --skip-predictions
 ```
 
+Run each dataset on a separate GPU:
+
+```bash
+export DATA_ROOT=/path/to/datasets
+scripts/remote/run_r3_2_hyperparam_sensitivity.sh --dataset etth1 --pred-len 336 --gpu 0 --skip-predictions
+scripts/remote/run_r3_2_hyperparam_sensitivity.sh --dataset weather --pred-len 336 --gpu 1 --skip-predictions
+```
+
 Dry-run command expansion:
 
 ```bash
