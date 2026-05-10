@@ -442,6 +442,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         np.save(os.path.join(res_path, 'metrics.npy'), np.array([mae, mse, rmse, mape, mspe]))
         if getattr(self.args, 'output_dir', ''):
+            self._export_channel_mask(self.args.output_dir)
             if getattr(self.args, 'test_corruption_type', 'none') != 'none':
                 m.update({
                     'test_corruption_type': self.args.test_corruption_type,

@@ -1,0 +1,17 @@
+manifest	dataset	pred_len	axis	value	default_k_top	default_mask_threshold
+etth1_pl336_topk_k008.json	ETTh1	336	topk	8	64	0.05
+etth1_pl336_topk_k016.json	ETTh1	336	topk	16	64	0.05
+etth1_pl336_topk_k032.json	ETTh1	336	topk	32	64	0.05
+etth1_pl336_topk_k064.json	ETTh1	336	topk	64	64	0.05
+etth1_pl336_topk_k096.json	ETTh1	336	topk	96	64	0.05
+etth1_pl336_mask_tau010.json	ETTh1	336	mask_threshold	0.1	64	0.05
+etth1_pl336_mask_tau015.json	ETTh1	336	mask_threshold	0.15	64	0.05
+etth1_pl336_mask_tau025.json	ETTh1	336	mask_threshold	0.25	64	0.05
+weather_pl336_topk_k008.json	Weather	336	topk	8	64	0.25
+weather_pl336_topk_k016.json	Weather	336	topk	16	64	0.25
+weather_pl336_topk_k032.json	Weather	336	topk	32	64	0.25
+weather_pl336_topk_k064.json	Weather	336	topk	64	64	0.25
+weather_pl336_topk_k096.json	Weather	336	topk	96	64	0.25
+weather_pl336_mask_tau005.json	Weather	336	mask_threshold	0.05	64	0.25
+weather_pl336_mask_tau010.json	Weather	336	mask_threshold	0.1	64	0.25
+weather_pl336_mask_tau015.json	Weather	336	mask_threshold	0.15	64	0.25

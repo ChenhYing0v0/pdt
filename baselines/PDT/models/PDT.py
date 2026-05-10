@@ -1,5 +1,6 @@
 import os
 import warnings
+import json
 import torch
 import math
 import torch.nn as nn
@@ -277,3 +278,23 @@ class Model(nn.Module):
         out = self.revin_layer(out, mode='denorm')
 
         return out
+
+    def save_channel_mask(self, output_dir):
+        if self._last_channel_mask is None:
+            return
+
+        os.makedirs(output_dir, exist_ok=True)
+        mask = self._last_channel_mask.numpy()
+        np.save(os.path.join(output_dir, 'channel_mask.npy'), mask)
+
+        values = mask.astype(np.float64)
+        stats = {
+            'shape': list(values.shape),
+            'mean': float(values.mean()),
+            'std': float(values.std()),
+            'min': float(values.min()),
+            'max': float(values.max()),
+            'density_gt_0_5': float((values > 0.5).mean()),
+        }
+        with open(os.path.join(output_dir, 'mask_stats.json'), 'w', encoding='utf-8') as f:
+            json.dump(stats, f, indent=2, sort_keys=True)
