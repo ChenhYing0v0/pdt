@@ -11,7 +11,7 @@ This document records the local adaptation of the official TimeFilter repository
 - Repository: `https://github.com/TROUBADOUR000/TimeFilter.git`
 - Imported commit: `dffde87e4fff0fdeeebbacde03dc1e432e15b3a1`
 
-The local copy keeps the original training flow and model code. The adaptation only adds protocol-facing arguments, seed application, artifact export, and a NumPy 2.0 compatibility replacement of deprecated `np.Inf` with `np.inf`.
+The local copy keeps the original training flow and model code. The adaptation only adds protocol-facing arguments, seed application, artifact export, a NumPy 2.0 compatibility replacement of deprecated `np.Inf` with `np.inf`, and `drop_last=True` in `data_provider/data_factory.py` for fair comparison with the PDT main-table protocol.
 
 ## Runner Flow
 
@@ -65,6 +65,45 @@ DATA_ROOT=/path/to/dataset/root bash scripts/remote/run_r3_4_timefilter_exchange
 
 `DATA_ROOT` must contain `exchange_rate/exchange_rate.csv`. The repo-local dataset layout is compatible with `DATA_ROOT=baselines/PDT/dataset`.
 
+## Full Verification Manifests
+
+To verify TimeFilter results under the same seed and `drop_last=True`, the following manifests are available:
+
+- `experiments/revision/r3_4_gnn_baselines/timefilter_ettm1_multi_pred_len.json`
+- `experiments/revision/r3_4_gnn_baselines/timefilter_ettm2_multi_pred_len.json`
+- `experiments/revision/r3_4_gnn_baselines/timefilter_etth1_multi_pred_len.json`
+- `experiments/revision/r3_4_gnn_baselines/timefilter_etth2_multi_pred_len.json`
+- `experiments/revision/r3_4_gnn_baselines/timefilter_ecl_multi_pred_len.json`
+- `experiments/revision/r3_4_gnn_baselines/timefilter_weather_multi_pred_len.json`
+- `experiments/revision/r3_4_gnn_baselines/timefilter_exchange_multi_pred_len.json`
+- `experiments/revision/r3_4_gnn_baselines/timefilter_traffic_multi_pred_len.json`
+
+All manifests use `seed = 2023`, `seq_len = 96`, and `pred_len = [96, 192, 336, 720]`. The ETT/ECL/Weather/Traffic settings follow the official TimeFilter fixed-lookback scripts; Exchange uses the ETTh1-style setting introduced for the missing paper result.
+
+Run all verification manifests on the remote machine:
+
+```bash
+DATA_ROOT=/path/to/dataset/root bash scripts/remote/run_r3_4_timefilter_verify_all.sh --gpu 0
+```
+
+For a command-only check:
+
+```bash
+DATA_ROOT=/path/to/dataset/root bash scripts/remote/run_r3_4_timefilter_verify_all.sh --gpu 0 --dry-run
+```
+
 ## Verification Boundary
 
-The integration verifies command construction and artifact plumbing. It does not claim TimeFilter Exchange result quality until remote training finishes and `metrics.json` files are collected for all four horizons.
+The integration verifies command construction and artifact plumbing. The returned Exchange rerun has collected `metrics.json` files for all four horizons.
+
+## Returned Exchange Results
+
+| pred_len | MSE | MAE | run directory |
+|---:|---:|---:|---|
+| 96 | 0.081 | 0.200 | `artifacts/runs/r3_4_timefilter_exchange_s2023_pl96` |
+| 192 | 0.170 | 0.295 | `artifacts/runs/r3_4_timefilter_exchange_s2023_pl192` |
+| 336 | 0.335 | 0.419 | `artifacts/runs/r3_4_timefilter_exchange_s2023_pl336` |
+| 720 | 0.643 | 0.605 | `artifacts/runs/r3_4_timefilter_exchange_s2023_pl720` |
+| Avg | 0.307 | 0.380 | arithmetic mean over four horizons |
+
+The same values have been added to `manuscript/revision/PDT_revision_v01/checks/gnn_baseline_main_results.csv`.

@@ -1,7 +1,7 @@
 {
   "baseline": "timefilter",
   "stage": "revision_r3_4_gnn_baseline_verify",
-  "dataset": "Exchange",
+  "dataset": "ETTh1",
   "seq_len": 96,
   "pred_len": [
     96,
@@ -12,21 +12,21 @@
   "seed": 2023,
   "search_budget": {
     "trials": 1,
-    "policy": "timefilter_etth1_settings_for_exchange_l96_drop_last_true"
+    "policy": "official_timefilter_etth1_l96_drop_last_true"
   },
   "entry": "baselines/TimeFilter/run.py",
   "args": {
-    "data": "custom",
-    "root_path": "${DATA_ROOT}/exchange_rate/",
-    "data_path": "exchange_rate.csv",
+    "data": "ETTh1",
+    "root_path": "${DATA_ROOT}/ETT-small/",
+    "data_path": "ETTh1.csv",
     "features": "M",
     "target": "OT",
     "freq": "h",
     "seq_len": 96,
     "label_len": 48,
-    "enc_in": 8,
-    "dec_in": 8,
-    "c_out": 8,
+    "enc_in": 7,
+    "dec_in": 7,
+    "c_out": 7,
     "e_layers": 2,
     "d_layers": 1,
     "factor": 3,
