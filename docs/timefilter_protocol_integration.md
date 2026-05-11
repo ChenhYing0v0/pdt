@@ -11,7 +11,7 @@ This document records the local adaptation of the official TimeFilter repository
 - Repository: `https://github.com/TROUBADOUR000/TimeFilter.git`
 - Imported commit: `dffde87e4fff0fdeeebbacde03dc1e432e15b3a1`
 
-The local copy keeps the original training flow and model code. The adaptation only adds protocol-facing arguments, seed application, and artifact export.
+The local copy keeps the original training flow and model code. The adaptation only adds protocol-facing arguments, seed application, artifact export, and a NumPy 2.0 compatibility replacement of deprecated `np.Inf` with `np.inf`.
 
 ## Runner Flow
 

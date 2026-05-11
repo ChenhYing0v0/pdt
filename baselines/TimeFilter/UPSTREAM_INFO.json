@@ -6,6 +6,7 @@
   "local_changes": [
     "Added protocol-facing CLI fields in run.py: output_dir, run_id, metric_policy, selection_policy.",
     "Applied the manifest seed after argument parsing so protocol seeds control random, torch, and numpy.",
-    "Added protocol artifact export in exp/exp_long_term_forecasting.py: metrics.json, metrics.npy, result log, and best.ckpt."
+    "Added protocol artifact export in exp/exp_long_term_forecasting.py: metrics.json, metrics.npy, result log, and best.ckpt.",
+    "Replaced deprecated np.Inf with np.inf in utils/tools.py for NumPy 2.0 compatibility."
   ]
 }
