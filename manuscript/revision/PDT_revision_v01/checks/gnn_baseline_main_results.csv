@@ -1,0 +1,76 @@
+model,paper_url,source_scope,dataset,pred_len,mse,mae,value_status,include_in_main_table,note
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm1,96,0.317,0.357,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm1,192,0.365,0.383,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm1,336,0.393,0.405,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm1,720,0.456,0.442,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm1,Avg,0.383,0.397,computed_from_4_horizons,yes,rounded arithmetic mean
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm2,96,0.176,0.259,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm2,192,0.238,0.300,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm2,336,0.296,0.338,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm2,720,0.395,0.396,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTm2,Avg,0.276,0.323,computed_from_4_horizons,yes,rounded arithmetic mean
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh1,96,0.373,0.397,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh1,192,0.424,0.427,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh1,336,0.472,0.448,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh1,720,0.479,0.475,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh1,Avg,0.437,0.437,computed_from_4_horizons,yes,rounded arithmetic mean
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh2,96,0.294,0.345,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh2,192,0.367,0.396,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh2,336,0.407,0.428,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh2,720,0.420,0.441,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ETTh2,Avg,0.372,0.403,computed_from_4_horizons,yes,rounded arithmetic mean
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ECL,96,0.138,0.235,extracted,yes,paper label Electricity
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ECL,192,0.154,0.249,extracted,yes,paper label Electricity
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ECL,336,0.169,0.264,extracted,yes,paper label Electricity
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ECL,720,0.199,0.294,extracted,yes,paper label Electricity
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,ECL,Avg,0.165,0.261,computed_from_4_horizons,yes,rounded arithmetic mean; paper label Electricity
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Exchange,96,0.086,0.206,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Exchange,192,0.181,0.303,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Exchange,336,0.334,0.418,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Exchange,720,0.869,0.702,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Exchange,Avg,0.368,0.407,computed_from_4_horizons,yes,rounded arithmetic mean
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Traffic,96,0.423,0.278,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Traffic,192,0.445,0.285,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Traffic,336,0.460,0.292,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Traffic,720,0.503,0.312,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Traffic,Avg,0.458,0.292,computed_from_4_horizons,yes,rounded arithmetic mean
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Weather,96,0.161,0.206,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Weather,192,0.209,0.251,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Weather,336,0.268,0.295,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Weather,720,0.348,0.345,extracted,yes,
+ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Weather,Avg,0.247,0.274,computed_from_4_horizons,yes,rounded arithmetic mean
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,96,0.313,0.354,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,192,0.356,0.380,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,336,0.386,0.402,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,720,0.452,0.437,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,Avg,0.377,0.393,extracted,yes,paper Avg row
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,96,0.169,0.255,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,192,0.235,0.299,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,336,0.293,0.336,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,720,0.390,0.393,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,Avg,0.272,0.321,extracted,yes,paper Avg row
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,96,0.370,0.394,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,192,0.413,0.420,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,336,0.450,0.440,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,720,0.448,0.457,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,Avg,0.420,0.428,extracted,yes,paper Avg row
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,96,0.283,0.337,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,192,0.362,0.392,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,336,0.404,0.424,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,720,0.407,0.433,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,Avg,0.364,0.397,extracted,yes,paper Avg row
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,96,0.153,0.199,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,192,0.202,0.246,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,336,0.260,0.289,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,720,0.342,0.341,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,Avg,0.239,0.269,extracted,yes,paper Avg row
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,96,0.133,0.230,extracted,yes,paper label Electricity
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,192,0.154,0.248,extracted,yes,paper label Electricity
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,336,0.162,0.261,extracted,yes,paper label Electricity
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,720,0.184,0.284,extracted,yes,paper label Electricity
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,Avg,0.158,0.256,extracted,yes,paper Avg row; paper label Electricity
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,96,0.375,0.251,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,192,0.395,0.262,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,336,0.414,0.271,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,720,0.445,0.289,extracted,yes,
+TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,Avg,0.407,0.268,extracted,yes,paper Avg row

@@ -15,12 +15,14 @@ from protocol.manifests import load_manifest, manifest_from_data
 from protocol.runners.dlinear import build_command as build_dlinear_command
 from protocol.runners.itransformer import build_command as build_itransformer_command
 from protocol.runners.pdt import build_command as build_pdt_command
+from protocol.runners.timefilter import build_command as build_timefilter_command
 
 
 BUILDERS = {
     "dlinear": build_dlinear_command,
     "itransformer": build_itransformer_command,
     "pdt": build_pdt_command,
+    "timefilter": build_timefilter_command,
 }
 
 

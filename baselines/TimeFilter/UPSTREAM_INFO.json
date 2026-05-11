@@ -1,0 +1,11 @@
+{
+  "name": "TimeFilter",
+  "source_url": "https://github.com/TROUBADOUR000/TimeFilter.git",
+  "imported_commit": "dffde87e4fff0fdeeebbacde03dc1e432e15b3a1",
+  "imported_date": "2026-05-11",
+  "local_changes": [
+    "Added protocol-facing CLI fields in run.py: output_dir, run_id, metric_policy, selection_policy.",
+    "Applied the manifest seed after argument parsing so protocol seeds control random, torch, and numpy.",
+    "Added protocol artifact export in exp/exp_long_term_forecasting.py: metrics.json, metrics.npy, result log, and best.ckpt."
+  ]
+}
