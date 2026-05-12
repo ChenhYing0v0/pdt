@@ -39,43 +39,43 @@ ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result t
 ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Weather,336,0.268,0.295,extracted,yes,
 ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Weather,720,0.348,0.345,extracted,yes,
 ForecastGrapher,https://arxiv.org/abs/2405.18036,official detailed main-result table,Weather,Avg,0.247,0.274,computed_from_4_horizons,yes,rounded arithmetic mean
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,96,0.313,0.354,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,192,0.356,0.380,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,336,0.386,0.402,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,720,0.452,0.437,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm1,Avg,0.377,0.393,extracted,yes,paper Avg row
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,96,0.169,0.255,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,192,0.235,0.299,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,336,0.293,0.336,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,720,0.390,0.393,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTm2,Avg,0.272,0.321,extracted,yes,paper Avg row
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,96,0.370,0.394,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,192,0.413,0.420,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,336,0.450,0.440,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,720,0.448,0.457,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh1,Avg,0.420,0.428,extracted,yes,paper Avg row
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,96,0.283,0.337,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,192,0.362,0.392,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,336,0.404,0.424,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,720,0.407,0.433,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ETTh2,Avg,0.364,0.397,extracted,yes,paper Avg row
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,96,0.153,0.199,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,192,0.202,0.246,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,336,0.260,0.289,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,720,0.342,0.341,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Weather,Avg,0.239,0.269,extracted,yes,paper Avg row
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,96,0.133,0.230,extracted,yes,paper label Electricity
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,192,0.154,0.248,extracted,yes,paper label Electricity
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,336,0.162,0.261,extracted,yes,paper label Electricity
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,720,0.184,0.284,extracted,yes,paper label Electricity
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,ECL,Avg,0.158,0.256,extracted,yes,paper Avg row; paper label Electricity
-TimeFilter,https://arxiv.org/abs/2501.13041,remote protocol rerun from official code,Exchange,96,0.081,0.200,rerun_result,yes,run_id r3_4_timefilter_exchange_s2023_pl96
-TimeFilter,https://arxiv.org/abs/2501.13041,remote protocol rerun from official code,Exchange,192,0.170,0.295,rerun_result,yes,run_id r3_4_timefilter_exchange_s2023_pl192
-TimeFilter,https://arxiv.org/abs/2501.13041,remote protocol rerun from official code,Exchange,336,0.335,0.419,rerun_result,yes,run_id r3_4_timefilter_exchange_s2023_pl336
-TimeFilter,https://arxiv.org/abs/2501.13041,remote protocol rerun from official code,Exchange,720,0.643,0.605,rerun_result,yes,run_id r3_4_timefilter_exchange_s2023_pl720
-TimeFilter,https://arxiv.org/abs/2501.13041,remote protocol rerun from official code,Exchange,Avg,0.307,0.380,computed_from_remote_rerun,yes,rounded arithmetic mean over 4 rerun horizons
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,96,0.375,0.251,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,192,0.395,0.262,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,336,0.414,0.271,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,720,0.445,0.289,extracted,yes,
-TimeFilter,https://arxiv.org/abs/2501.13041,official fixed-L=96 detailed table,Traffic,Avg,0.407,0.268,extracted,yes,paper Avg row
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm1,96,0.313,0.354,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ettm1_s2023_pl96
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm1,192,0.356,0.379,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ettm1_s2023_pl192
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm1,336,0.387,0.404,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ettm1_s2023_pl336
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm1,720,0.455,0.438,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ettm1_s2023_pl720
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm1,Avg,0.378,0.394,computed_from_summary_rerun,yes,seed=2023; rounded arithmetic mean over 4 summary rows
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm2,96,0.173,0.258,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ettm2_s2023_pl96
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm2,192,0.238,0.300,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ettm2_s2023_pl192
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm2,336,0.300,0.340,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ettm2_s2023_pl336
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm2,720,0.394,0.396,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ettm2_s2023_pl720
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTm2,Avg,0.276,0.323,computed_from_summary_rerun,yes,seed=2023; rounded arithmetic mean over 4 summary rows
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh1,96,0.373,0.397,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_etth1_s2023_pl96
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh1,192,0.420,0.425,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_etth1_s2023_pl192
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh1,336,0.460,0.447,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_etth1_s2023_pl336
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh1,720,0.485,0.479,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_etth1_s2023_pl720
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh1,Avg,0.434,0.437,computed_from_summary_rerun,yes,seed=2023; rounded arithmetic mean over 4 summary rows
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh2,96,0.292,0.344,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_etth2_s2023_pl96
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh2,192,0.411,0.429,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_etth2_s2023_pl192
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh2,336,0.409,0.428,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_etth2_s2023_pl336
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh2,720,0.408,0.436,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_etth2_s2023_pl720
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ETTh2,Avg,0.380,0.409,computed_from_summary_rerun,yes,seed=2023; rounded arithmetic mean over 4 summary rows
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ECL,96,0.136,0.234,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ecl_s2023_pl96
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ECL,192,0.154,0.248,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ecl_s2023_pl192
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ECL,336,0.168,0.285,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ecl_s2023_pl336
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ECL,720,0.190,0.288,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_ecl_s2023_pl720
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,ECL,Avg,0.162,0.264,computed_from_summary_rerun,yes,seed=2023; rounded arithmetic mean over 4 summary rows
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Weather,96,0.160,0.206,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_weather_s2023_pl96
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Weather,192,0.208,0.250,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_weather_s2023_pl192
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Weather,336,0.266,0.293,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_weather_s2023_pl336
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Weather,720,0.345,0.345,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_weather_s2023_pl720
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Weather,Avg,0.245,0.273,computed_from_summary_rerun,yes,seed=2023; rounded arithmetic mean over 4 summary rows
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Exchange,96,0.084,0.200,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_exchange_s2023_pl96
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Exchange,192,0.172,0.296,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_exchange_s2023_pl192
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Exchange,336,0.335,0.418,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_exchange_s2023_pl336
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Exchange,720,0.785,0.675,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_exchange_s2023_pl720
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Exchange,Avg,0.344,0.397,computed_from_summary_rerun,yes,seed=2023; rounded arithmetic mean over 4 summary rows
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Traffic,96,0.375,0.251,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_traffic_s2023_pl96
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Traffic,192,0.396,0.262,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_traffic_s2023_pl192
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Traffic,336,0.414,0.271,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_traffic_s2023_pl336
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Traffic,720,0.447,0.291,rerun_result,yes,seed=2023; run_id=r3_4_timefilter_verify_traffic_s2023_pl720
+TimeFilter,https://arxiv.org/abs/2501.13041,artifacts/summary.csv revision_r3_4_gnn_baseline_verify,Traffic,Avg,0.408,0.269,computed_from_summary_rerun,yes,seed=2023; rounded arithmetic mean over 4 summary rows
