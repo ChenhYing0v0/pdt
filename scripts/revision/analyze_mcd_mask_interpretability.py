@@ -150,7 +150,7 @@ def _plot_heatmaps(mask: np.ndarray, corr: np.ndarray | None, output_path: Path,
     fig, axes = plt.subplots(1, panels, figsize=(width, 3.2), constrained_layout=True)
     if panels == 1:
         axes = [axes]
-    cmap = "Blues"
+    cmap = "viridis"
     image = axes[0].imshow(mask, cmap=cmap, vmin=0, vmax=1, aspect="equal", interpolation="nearest")
     axes[0].set_title("(a) MCD mask", pad=4)
     axes[0].set_xlabel("Channel")
@@ -159,7 +159,7 @@ def _plot_heatmaps(mask: np.ndarray, corr: np.ndarray | None, output_path: Path,
     cbar.set_ticks([0.0, 0.5, 1.0])
     if panels == 2 and corr is not None:
         corr_image = axes[1].imshow(corr, cmap=cmap, vmin=0, vmax=1, aspect="equal", interpolation="nearest")
-        axes[1].set_title("(b) Test correlation", pad=4)
+        axes[1].set_title("(b) Future correlation", pad=4)
         axes[1].set_xlabel("Channel")
         axes[1].set_ylabel("Channel")
         corr_cbar = fig.colorbar(corr_image, ax=axes[1], fraction=0.046, pad=0.03)
