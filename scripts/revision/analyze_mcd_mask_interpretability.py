@@ -136,6 +136,7 @@ def _offdiag_values(matrix: np.ndarray) -> np.ndarray:
 
 def _plot_heatmaps(mask: np.ndarray, corr: np.ndarray | None, output_path: Path, title: str) -> None:
     import matplotlib.pyplot as plt
+    from matplotlib.colors import LinearSegmentedColormap
 
     panels = 2 if corr is not None and corr.shape == mask.shape else 1
     width = 7.2 if panels == 2 else 3.6
@@ -150,7 +151,10 @@ def _plot_heatmaps(mask: np.ndarray, corr: np.ndarray | None, output_path: Path,
     fig, axes = plt.subplots(1, panels, figsize=(width, 3.2), constrained_layout=True)
     if panels == 1:
         axes = [axes]
-    cmap = "viridis"
+    cmap = LinearSegmentedColormap.from_list(
+        "muted_blue",
+        ["#f4f7fb", "#c7dcea", "#6fa6c9", "#2f78b7", "#12355b"],
+    )
     image = axes[0].imshow(mask, cmap=cmap, vmin=0, vmax=1, aspect="equal", interpolation="nearest")
     axes[0].set_title("(a) MCD mask", pad=4)
     axes[0].set_xlabel("Channel")
