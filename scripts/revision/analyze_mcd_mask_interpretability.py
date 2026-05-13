@@ -138,24 +138,46 @@ def _plot_heatmaps(mask: np.ndarray, corr: np.ndarray | None, output_path: Path,
     import matplotlib.pyplot as plt
 
     panels = 2 if corr is not None and corr.shape == mask.shape else 1
-    width = 8 if panels == 2 else 4.8
-    fig, axes = plt.subplots(1, panels, figsize=(width, 4), constrained_layout=True)
+    width = 7.2 if panels == 2 else 3.6
+    plt.rcParams.update({
+        "font.family": "DejaVu Sans",
+        "font.size": 8,
+        "axes.titlesize": 9,
+        "axes.labelsize": 8,
+        "xtick.labelsize": 7,
+        "ytick.labelsize": 7,
+    })
+    fig, axes = plt.subplots(1, panels, figsize=(width, 3.2), constrained_layout=True)
     if panels == 1:
         axes = [axes]
-    image = axes[0].imshow(mask, cmap="viridis", vmin=0, vmax=1, aspect="auto")
-    axes[0].set_title("Learned MCD mask")
+    cmap = "Blues"
+    image = axes[0].imshow(mask, cmap=cmap, vmin=0, vmax=1, aspect="equal", interpolation="nearest")
+    axes[0].set_title("(a) MCD mask", pad=4)
     axes[0].set_xlabel("Channel")
     axes[0].set_ylabel("Channel")
-    fig.colorbar(image, ax=axes[0], fraction=0.046, pad=0.04)
+    cbar = fig.colorbar(image, ax=axes[0], fraction=0.046, pad=0.03)
+    cbar.set_ticks([0.0, 0.5, 1.0])
     if panels == 2 and corr is not None:
-        corr_image = axes[1].imshow(corr, cmap="magma", vmin=0, vmax=1, aspect="auto")
-        axes[1].set_title("Abs. test correlation")
+        corr_image = axes[1].imshow(corr, cmap=cmap, vmin=0, vmax=1, aspect="equal", interpolation="nearest")
+        axes[1].set_title("(b) Test correlation", pad=4)
         axes[1].set_xlabel("Channel")
         axes[1].set_ylabel("Channel")
-        fig.colorbar(corr_image, ax=axes[1], fraction=0.046, pad=0.04)
-    fig.suptitle(title)
+        corr_cbar = fig.colorbar(corr_image, ax=axes[1], fraction=0.046, pad=0.03)
+        corr_cbar.set_ticks([0.0, 0.5, 1.0])
+    for ax in axes:
+        ax.tick_params(length=2.5, width=0.6)
+        for spine in ax.spines.values():
+            spine.set_linewidth(0.6)
+        if mask.shape[0] > 15:
+            ticks = np.arange(0, mask.shape[0], 4)
+            if ticks[-1] != mask.shape[0] - 1:
+                ticks = np.append(ticks, mask.shape[0] - 1)
+            ax.set_xticks(ticks)
+            ax.set_yticks(ticks)
+    _ = title
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=220)
+    fig.savefig(output_path, dpi=400, bbox_inches="tight", facecolor="white")
+    fig.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
 
