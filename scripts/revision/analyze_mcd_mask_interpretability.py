@@ -41,9 +41,24 @@ def _mask_2d(mask_path: Path) -> np.ndarray:
     return mask
 
 
-def _feature_frame(manifest: dict[str, Any]) -> pd.DataFrame:
+def _resolve_dataset_csv(args: dict[str, Any], data_root: str | None) -> Path:
+    raw_root = _resolve_path(str(args["root_path"]))
+    data_path = str(args["data_path"])
+    if data_root:
+        local_root = _resolve_path(data_root)
+        candidates = [
+            local_root / raw_root.name / data_path,
+            local_root / data_path,
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+    return raw_root / data_path
+
+
+def _feature_frame(manifest: dict[str, Any], data_root: str | None) -> pd.DataFrame:
     args = manifest["args"]
-    csv_path = _resolve_path(str(args["root_path"])) / str(args["data_path"])
+    csv_path = _resolve_dataset_csv(args, data_root)
     raw = pd.read_csv(csv_path)
     features = str(args.get("features", "M"))
     target = str(args.get("target", "OT"))
@@ -159,7 +174,7 @@ def _read_run(run_dir: Path, output_dir: Path, data_root: str | None) -> dict[st
     pearson = float("nan")
     spearman = float("nan")
     try:
-        features = _feature_frame(manifest)
+        features = _feature_frame(manifest, data_root)
         test_values = _test_slice(features, manifest)
         corr = _abs_corr(test_values)
         if corr.shape == mask.shape:
