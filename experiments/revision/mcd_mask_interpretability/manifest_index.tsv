@@ -1,0 +1,13 @@
+manifest	dataset	pred_len	k_top	mask_threshold	enc_in
+etth1_pl96.json	ETTh1	96	16	0.05	7
+etth1_pl192.json	ETTh1	192	96	0.05	7
+etth1_pl336.json	ETTh1	336	64	0.05	7
+etth1_pl720.json	ETTh1	720	96	0.05	7
+weather_pl96.json	Weather	96	8	0.05	21
+weather_pl192.json	Weather	192	96	0.1	21
+weather_pl336.json	Weather	336	64	0.25	21
+weather_pl720.json	Weather	720	8	0.05	21
+ecl_pl96.json	ECL	96	96	0.25	321
+ecl_pl192.json	ECL	192	64	0.05	321
+ecl_pl336.json	ECL	336	32	0.1	321
+ecl_pl720.json	ECL	720	32	0.1	321
